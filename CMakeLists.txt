@@ -1,12 +1,13 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.5)
 project(PEER)
+set(CMAKE_CXX_STANDARD 14)
 
 #build options
 #bindings
 #PYTHON on by default
 option(BUILD_PYTHON_PACKAGE "Enable Python bindings" ON)
 #R optional
-option(BUILD_R_PACKAGE "Enable R bindings" OFF)
+option(BUILD_R_PACKAGE "Enable R bindings" ON)
 
 #build stuff
 option(BUILD_UNIVERSAL "Build both 32 and 64 bit versions" OFF)
@@ -73,6 +74,9 @@ endif (BUILD_UNIVERSAL)
 
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
+
+find_package(Eigen3 REQUIRED NO_MODULE)
+link_libraries(Eigen3::Eigen)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKE_SWIG_FLAGS "")

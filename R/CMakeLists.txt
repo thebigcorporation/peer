@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.5)
+
 #oli: I changed this to FindR which seems quite stable here
 find_package(R REQUIRED)
 
@@ -8,8 +10,9 @@ if (BUILD_R_PACKAGE)
 
   INCLUDE(${SWIG_USE_FILE})
 
-  include_directories(./../External)
-  include_directories(./../External/Eigen)
+  find_package(Eigen3 REQUIRED)
+  link_libraries(Eigen3::Eigen)
+  
   include_directories(${PEER_SRC_DIR}/External/alglib)
   include_directories(${PEER_SRC_DIR}/include)
 

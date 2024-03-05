@@ -9,3 +9,5 @@ cran/peer/src/*.so
 cran/peer/src/*.h
 cran/peer_source.tgz
 cran/peer/src/alglib
+
+.vscode/

@@ -1,6 +1,7 @@
 # Python cmake build script
 # This requires swig, python sources and numpy to be installed
 # See README.txt for documentaton on how to circumvent potential problems in detecting the libraries
+cmake_minimum_required(VERSION 3.5)
 
 
 find_package(SWIG REQUIRED)
@@ -77,9 +78,9 @@ if(BUILD_PYTHON_PACKAGE)
 include_directories(${PYTHON_INCLUDE_DIRS})
 include_directories(${NUMPY_INCLUDE_DIR})
 
+find_package(Eigen3 REQUIRED)
+link_libraries(Eigen3::Eigen)
 
-include_directories(./../External)
-include_directories(./../External/Eigen)
 include_directories(${PEER_SRC_DIR}/External/alglib)
 include_directories(${PEER_SRC_DIR}/include)
 

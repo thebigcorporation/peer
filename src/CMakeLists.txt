@@ -1,4 +1,3 @@
-include_directories(../External)
 include_directories(../External/alglib)
 include_directories(../External/csv_parser/include) #remove this once deemed safe
 include_directories(../External/csv_parser/include/csv_parser)

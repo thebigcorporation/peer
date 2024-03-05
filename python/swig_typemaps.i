@@ -28,7 +28,7 @@ extern "C" {
 
 /* Functions to extract array attributes.
  */
-bool is_array(PyObject* a) { return (a) && PyArray_Check(a); }
+bool SWIG_is_array(PyObject* a) { return (a) && PyArray_Check(a); }
 int array_type(PyObject* a) { return (int) PyArray_TYPE(a); }
 int array_dimensions(PyObject* a)  { return ((PyArrayObject *)a)->nd; }
 int array_size(PyObject* a, int i) { return ((PyArrayObject *)a)->dimensions[i]; }
@@ -45,9 +45,9 @@ const char* typecode_string(PyObject* py_obj) {
   if (PyDict_Check(    py_obj)) return "dict"        ;
   if (PyList_Check(    py_obj)) return "list"        ;
   if (PyTuple_Check(   py_obj)) return "tuple"       ;
-  if (PyFile_Check(    py_obj)) return "file"        ;
+//   if (PyFile_Check(    py_obj)) return "file"        ;
   if (PyModule_Check(  py_obj)) return "module"      ;
-  if (PyInstance_Check(py_obj)) return "instance"    ;
+//   if (PyInstance_Check(py_obj)) return "instance"    ;
 
   return "unknown type";
 }
@@ -101,12 +101,12 @@ int type_match(int actual_type, int desired_type) {
 PyArrayObject* obj_to_array_no_conversion(PyObject* input, int typecode)
 {
   PyArrayObject* ary = NULL;
-  if (is_array(input) && (typecode == PyArray_NOTYPE || 
+  if (SWIG_is_array(input) && (typecode == PyArray_NOTYPE || 
 			  PyArray_EquivTypenums(array_type(input), 
 						typecode))) {
         ary = (PyArrayObject*) input;
     }
-    else if (is_array(input)) {
+    else if (SWIG_is_array(input)) {
       const char* desired_type = typecode_string(typecode);
       const char* actual_type = typecode_string(array_type(input));
       PyErr_Format(PyExc_TypeError, 
@@ -155,7 +155,7 @@ PyObject* make_contiguous(PyObject* ary, int* is_new_object,
         return NULL;
     }
 
-    if (!is_array(array))
+    if (!SWIG_is_array(array))
     {
         PyErr_SetString(PyExc_TypeError, "Object not an Array");
         *is_new_object=0;
@@ -253,7 +253,7 @@ int require_dimensions(PyObject* ary, int exact_dimensions) {
 {
     $1 = (
             ($input && PyList_Check($input) && PyList_Size($input)>0) ||
-            (is_array($input) && array_dimensions($input)==1 && array_type($input) == typecode)
+            (SWIG_is_array($input) && array_dimensions($input)==1 && array_type($input) == typecode)
          ) ? 1 : 0;
 }
 
@@ -296,7 +296,7 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
 {
     $1 = (
             ($input && PyList_Check($input) && PyList_Size($input)>0) ||
-            (is_array($input) && array_dimensions($input)==1 && array_type($input) == typecode)
+            (SWIG_is_array($input) && array_dimensions($input)==1 && array_type($input) == typecode)
          ) ? 1 : 0;
 }
 
@@ -337,7 +337,7 @@ TYPEMAP_IN1(PyObject,      NPY_OBJECT)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
         (type* IN_ARRAY2, int32_t DIM1, int32_t DIM2)
 {
-    $1 = (is_array($input) && array_dimensions($input)==2 &&
+    $1 = (SWIG_is_array($input) && array_dimensions($input)==2 &&
             array_type($input) == typecode) ? 1 : 0;
 }
 
@@ -379,7 +379,7 @@ TYPEMAP_IN2(PyObject,      NPY_OBJECT)
 %typemap(typecheck, precedence=SWIG_TYPECHECK_POINTER)
         (type* IN_NDARRAY, int32_t* DIMS, int32_t NDIMS)
 {
-    $1 = (is_array($input)) ? 1 : 0;
+    $1 = (SWIG_is_array($input)) ? 1 : 0;
 }
 
 %typemap(in) (type* IN_NDARRAY, int32_t* DIMS, int32_t NDIMS)
@@ -742,7 +742,7 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
             }
             else
             {
-                if (!is_array(o) || array_dimensions(o)!=1 || array_type(o) != typecode)
+                if (!SWIG_is_array(o) || array_dimensions(o)!=1 || array_type(o) != typecode)
                 {
                     $1=0;
                     break;
@@ -792,7 +792,7 @@ TYPEMAP_ARGOUT2(PyObject,      NPY_OBJECT)
             }
             else
             {
-                if (is_array(o) && array_dimensions(o)==1 && array_type(o) == typecode)
+                if (SWIG_is_array(o) && array_dimensions(o)==1 && array_type(o) == typecode)
                 {
                     int is_new_object=0;
                     PyObject* array = make_contiguous(o, &is_new_object, 1, typecode);
@@ -972,21 +972,21 @@ TYPEMAP_STRINGFEATURES_ARGOUT(PyObject,      NPY_OBJECT)
         PyObject* shape = PyObject_GetAttrString(o, "shape");
 
         /* check that types are OK */
-        if ((!is_array(indptr)) || (array_dimensions(indptr)!=1) ||
+        if ((!SWIG_is_array(indptr)) || (array_dimensions(indptr)!=1) ||
                 (array_type(indptr)!=NPY_INT && array_type(indptr)!=NPY_LONG))
         {
             PyErr_SetString(PyExc_TypeError,"indptr array should be 1d int's");
             return NULL;
         }
 
-        if (!is_array(indices) || array_dimensions(indices)!=1 ||
+        if (!SWIG_is_array(indices) || array_dimensions(indices)!=1 ||
                 (array_type(indices)!=NPY_INT && array_type(indices)!=NPY_LONG))
         {
             PyErr_SetString(PyExc_TypeError,"indices array should be 1d int's");
             return NULL;
         }
 
-        if (!is_array(data) || array_dimensions(data)!=1 || array_type(data) != typecode)
+        if (!SWIG_is_array(data) || array_dimensions(data)!=1 || array_type(data) != typecode)
         {
             PyErr_SetString(PyExc_TypeError,"data array should be 1d and match datatype");
             return NULL;

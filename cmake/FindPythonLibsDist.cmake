@@ -4,10 +4,12 @@
 # PYTHONLIBS_FOUND, If false, do not try to use numpy headers.
 
 if (NOT PYTHON_LIBRARIES OR NOT PYTHON_INCLUDE_DIRS)
-    exec_program ("${PYTHON_EXECUTABLE}"
-      ARGS "-c 'from distutils import sysconfig; print sysconfig.get_config_var(\"LDLIBRARY\")'"
+    execute_process (
+      COMMAND "${PYTHON_EXECUTABLE}"
+      -c "from distutils import sysconfig; print(sysconfig.get_config_var(\"LDLIBRARY\"))"
       OUTPUT_VARIABLE PYTHON_LIBRARIES
-      RETURN_VALUE PYTHONLIBS_FOUND)
+      RESULT_VARIABLE PYTHONLIBS_FOUND
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
     if (PYTHON_LIBRARIES MATCHES "Traceback")
     # Did not successfully include numpy
       set(PYTHONLIBS_FOUND FALSE)
@@ -16,10 +18,12 @@ if (NOT PYTHON_LIBRARIES OR NOT PYTHON_INCLUDE_DIRS)
       set (PYTHONLIBS_FOUND TRUE)
     endif ()
 
-    exec_program ("${PYTHON_EXECUTABLE}"
-      ARGS "-c 'from distutils import sysconfig; print sysconfig.get_python_inc()'"
+    execute_process (
+      COMMAND "${PYTHON_EXECUTABLE}"
+      -c "from distutils import sysconfig; print(sysconfig.get_python_inc())"
       OUTPUT_VARIABLE PYTHON_INCLUDE_DIRS
-      RETURN_VALUE PYTHONLIBS_FOUND)
+      RESULT_VARIABLE PYTHONLIBS_FOUND
+      OUTPUT_STRIP_TRAILING_WHITESPACE)
     if (PYTHON_INCLUDE_DIRS MATCHES "Traceback")
     # Did not successfully include numpy
       set(PYTHONLIBS_FOUND FALSE)
