@@ -1,0 +1,8 @@
+name: peer
+channels:
+  - conda-forge
+dependencies:
+  - r-devtools
+  - numpy
+  - swig
+  - eigen
