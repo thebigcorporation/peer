@@ -1,10 +1,11 @@
 /*************************************************************************
+ALGLIB 4.01.0 (source code generated 2023-12-27)
 Copyright (c) Sergey Bochkanov (ALGLIB project).
 
 >>> SOURCE LICENSE >>>
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation (www.fsf.org); either version 2 of the
+the Free Software Foundation (www.fsf.org); either version 2 of the 
 License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -16,13 +17,17 @@ A copy of the GNU General Public License is available at
 http://www.fsf.org/licensing/licenses
 >>> END OF LICENSE >>>
 *************************************************************************/
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 #include "stdafx.h"
 #include "diffequations.h"
 
 // disable some irrelevant warnings
-#if (AE_COMPILER==AE_MSVC)
+#if (AE_COMPILER==AE_MSVC) && !defined(AE_ALL_WARNINGS)
 #pragma warning(disable:4100)
 #pragma warning(disable:4127)
+#pragma warning(disable:4611)
 #pragma warning(disable:4702)
 #pragma warning(disable:4996)
 #endif
@@ -35,42 +40,107 @@ http://www.fsf.org/licensing/licenses
 namespace alglib
 {
 
+#if defined(AE_COMPILE_ODESOLVER) || !defined(AE_PARTIAL_BUILD)
 
+#endif
+
+#if defined(AE_COMPILE_ODESOLVER) || !defined(AE_PARTIAL_BUILD)
 /*************************************************************************
 
 *************************************************************************/
 _odesolverstate_owner::_odesolverstate_owner()
 {
-    p_struct = (alglib_impl::odesolverstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverstate), NULL);
-    if( p_struct==NULL )
-        throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_odesolverstate_init(p_struct, NULL, ae_false) )
-        throw ap_error("ALGLIB: malloc error");
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _state;
+    
+    alglib_impl::ae_state_init(&_state);
+    if( setjmp(_break_jump) )
+    {
+        if( p_struct!=NULL )
+        {
+            alglib_impl::_odesolverstate_destroy(p_struct);
+            alglib_impl::ae_free(p_struct);
+        }
+        p_struct = NULL;
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_state.error_msg);
+        return;
+#endif
+    }
+    alglib_impl::ae_state_set_break_jump(&_state, &_break_jump);
+    p_struct = NULL;
+    p_struct = (alglib_impl::odesolverstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverstate), &_state);
+    memset(p_struct, 0, sizeof(alglib_impl::odesolverstate));
+    alglib_impl::_odesolverstate_init(p_struct, &_state, ae_false);
+    ae_state_clear(&_state);
 }
 
 _odesolverstate_owner::_odesolverstate_owner(const _odesolverstate_owner &rhs)
 {
-    p_struct = (alglib_impl::odesolverstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverstate), NULL);
-    if( p_struct==NULL )
-        throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_odesolverstate_init_copy(p_struct, const_cast<alglib_impl::odesolverstate*>(rhs.p_struct), NULL, ae_false) )
-        throw ap_error("ALGLIB: malloc error");
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _state;
+    
+    alglib_impl::ae_state_init(&_state);
+    if( setjmp(_break_jump) )
+    {
+        if( p_struct!=NULL )
+        {
+            alglib_impl::_odesolverstate_destroy(p_struct);
+            alglib_impl::ae_free(p_struct);
+        }
+        p_struct = NULL;
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_state.error_msg);
+        return;
+#endif
+    }
+    alglib_impl::ae_state_set_break_jump(&_state, &_break_jump);
+    p_struct = NULL;
+    alglib_impl::ae_assert(rhs.p_struct!=NULL, "ALGLIB: odesolverstate copy constructor failure (source is not initialized)", &_state);
+    p_struct = (alglib_impl::odesolverstate*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverstate), &_state);
+    memset(p_struct, 0, sizeof(alglib_impl::odesolverstate));
+    alglib_impl::_odesolverstate_init_copy(p_struct, const_cast<alglib_impl::odesolverstate*>(rhs.p_struct), &_state, ae_false);
+    ae_state_clear(&_state);
 }
 
 _odesolverstate_owner& _odesolverstate_owner::operator=(const _odesolverstate_owner &rhs)
 {
     if( this==&rhs )
         return *this;
-    alglib_impl::_odesolverstate_clear(p_struct);
-    if( !alglib_impl::_odesolverstate_init_copy(p_struct, const_cast<alglib_impl::odesolverstate*>(rhs.p_struct), NULL, ae_false) )
-        throw ap_error("ALGLIB: malloc error");
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _state;
+    
+    alglib_impl::ae_state_init(&_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_state.error_msg);
+        return *this;
+#endif
+    }
+    alglib_impl::ae_state_set_break_jump(&_state, &_break_jump);
+    alglib_impl::ae_assert(p_struct!=NULL, "ALGLIB: odesolverstate assignment constructor failure (destination is not initialized)", &_state);
+    alglib_impl::ae_assert(rhs.p_struct!=NULL, "ALGLIB: odesolverstate assignment constructor failure (source is not initialized)", &_state);
+    alglib_impl::_odesolverstate_destroy(p_struct);
+    memset(p_struct, 0, sizeof(alglib_impl::odesolverstate));
+    alglib_impl::_odesolverstate_init_copy(p_struct, const_cast<alglib_impl::odesolverstate*>(rhs.p_struct), &_state, ae_false);
+    ae_state_clear(&_state);
     return *this;
 }
 
 _odesolverstate_owner::~_odesolverstate_owner()
 {
-    alglib_impl::_odesolverstate_clear(p_struct);
-    ae_free(p_struct);
+    if( p_struct!=NULL )
+    {
+        alglib_impl::_odesolverstate_destroy(p_struct);
+        ae_free(p_struct);
+    }
 }
 
 alglib_impl::odesolverstate* _odesolverstate_owner::c_ptr()
@@ -78,9 +148,9 @@ alglib_impl::odesolverstate* _odesolverstate_owner::c_ptr()
     return p_struct;
 }
 
-alglib_impl::odesolverstate* _odesolverstate_owner::c_ptr() const
+const alglib_impl::odesolverstate* _odesolverstate_owner::c_ptr() const
 {
-    return const_cast<alglib_impl::odesolverstate*>(p_struct);
+    return p_struct;
 }
 odesolverstate::odesolverstate() : _odesolverstate_owner() ,needdy(p_struct->needdy),y(&p_struct->y),dy(&p_struct->dy),x(p_struct->x)
 {
@@ -108,36 +178,97 @@ odesolverstate::~odesolverstate()
 *************************************************************************/
 _odesolverreport_owner::_odesolverreport_owner()
 {
-    p_struct = (alglib_impl::odesolverreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverreport), NULL);
-    if( p_struct==NULL )
-        throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_odesolverreport_init(p_struct, NULL, ae_false) )
-        throw ap_error("ALGLIB: malloc error");
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _state;
+    
+    alglib_impl::ae_state_init(&_state);
+    if( setjmp(_break_jump) )
+    {
+        if( p_struct!=NULL )
+        {
+            alglib_impl::_odesolverreport_destroy(p_struct);
+            alglib_impl::ae_free(p_struct);
+        }
+        p_struct = NULL;
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_state.error_msg);
+        return;
+#endif
+    }
+    alglib_impl::ae_state_set_break_jump(&_state, &_break_jump);
+    p_struct = NULL;
+    p_struct = (alglib_impl::odesolverreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverreport), &_state);
+    memset(p_struct, 0, sizeof(alglib_impl::odesolverreport));
+    alglib_impl::_odesolverreport_init(p_struct, &_state, ae_false);
+    ae_state_clear(&_state);
 }
 
 _odesolverreport_owner::_odesolverreport_owner(const _odesolverreport_owner &rhs)
 {
-    p_struct = (alglib_impl::odesolverreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverreport), NULL);
-    if( p_struct==NULL )
-        throw ap_error("ALGLIB: malloc error");
-    if( !alglib_impl::_odesolverreport_init_copy(p_struct, const_cast<alglib_impl::odesolverreport*>(rhs.p_struct), NULL, ae_false) )
-        throw ap_error("ALGLIB: malloc error");
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _state;
+    
+    alglib_impl::ae_state_init(&_state);
+    if( setjmp(_break_jump) )
+    {
+        if( p_struct!=NULL )
+        {
+            alglib_impl::_odesolverreport_destroy(p_struct);
+            alglib_impl::ae_free(p_struct);
+        }
+        p_struct = NULL;
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_state.error_msg);
+        return;
+#endif
+    }
+    alglib_impl::ae_state_set_break_jump(&_state, &_break_jump);
+    p_struct = NULL;
+    alglib_impl::ae_assert(rhs.p_struct!=NULL, "ALGLIB: odesolverreport copy constructor failure (source is not initialized)", &_state);
+    p_struct = (alglib_impl::odesolverreport*)alglib_impl::ae_malloc(sizeof(alglib_impl::odesolverreport), &_state);
+    memset(p_struct, 0, sizeof(alglib_impl::odesolverreport));
+    alglib_impl::_odesolverreport_init_copy(p_struct, const_cast<alglib_impl::odesolverreport*>(rhs.p_struct), &_state, ae_false);
+    ae_state_clear(&_state);
 }
 
 _odesolverreport_owner& _odesolverreport_owner::operator=(const _odesolverreport_owner &rhs)
 {
     if( this==&rhs )
         return *this;
-    alglib_impl::_odesolverreport_clear(p_struct);
-    if( !alglib_impl::_odesolverreport_init_copy(p_struct, const_cast<alglib_impl::odesolverreport*>(rhs.p_struct), NULL, ae_false) )
-        throw ap_error("ALGLIB: malloc error");
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _state;
+    
+    alglib_impl::ae_state_init(&_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_state.error_msg);
+        return *this;
+#endif
+    }
+    alglib_impl::ae_state_set_break_jump(&_state, &_break_jump);
+    alglib_impl::ae_assert(p_struct!=NULL, "ALGLIB: odesolverreport assignment constructor failure (destination is not initialized)", &_state);
+    alglib_impl::ae_assert(rhs.p_struct!=NULL, "ALGLIB: odesolverreport assignment constructor failure (source is not initialized)", &_state);
+    alglib_impl::_odesolverreport_destroy(p_struct);
+    memset(p_struct, 0, sizeof(alglib_impl::odesolverreport));
+    alglib_impl::_odesolverreport_init_copy(p_struct, const_cast<alglib_impl::odesolverreport*>(rhs.p_struct), &_state, ae_false);
+    ae_state_clear(&_state);
     return *this;
 }
 
 _odesolverreport_owner::~_odesolverreport_owner()
 {
-    alglib_impl::_odesolverreport_clear(p_struct);
-    ae_free(p_struct);
+    if( p_struct!=NULL )
+    {
+        alglib_impl::_odesolverreport_destroy(p_struct);
+        ae_free(p_struct);
+    }
 }
 
 alglib_impl::odesolverreport* _odesolverreport_owner::c_ptr()
@@ -145,9 +276,9 @@ alglib_impl::odesolverreport* _odesolverreport_owner::c_ptr()
     return p_struct;
 }
 
-alglib_impl::odesolverreport* _odesolverreport_owner::c_ptr() const
+const alglib_impl::odesolverreport* _odesolverreport_owner::c_ptr() const
 {
-    return const_cast<alglib_impl::odesolverreport*>(p_struct);
+    return p_struct;
 }
 odesolverreport::odesolverreport() : _odesolverreport_owner() ,nfev(p_struct->nfev),terminationtype(p_struct->terminationtype)
 {
@@ -182,7 +313,7 @@ INPUT PARAMETERS:
     X       -   points at which Y should be tabulated, array[0..M-1]
                 integrations starts at X[0], ends at X[M-1],  intermediate
                 values at X[i] are returned too.
-                SHOULD BE ORDERED BY ASCENDING OR BY DESCENDING!!!!
+                SHOULD BE ORDERED BY ASCENDING OR BY DESCENDING!
     M       -   number of intermediate points + first point + last point:
                 * M>2 means that you need both Y(X[M-1]) and M-2 values at
                   intermediate points
@@ -216,24 +347,26 @@ SEE ALSO
   -- ALGLIB --
      Copyright 01.09.2009 by Bochkanov Sergey
 *************************************************************************/
-void odesolverrkck(const real_1d_array &y, const ae_int_t n, const real_1d_array &x, const ae_int_t m, const double eps, const double h, odesolverstate &state)
+void odesolverrkck(const real_1d_array &y, const ae_int_t n, const real_1d_array &x, const ae_int_t m, const double eps, const double h, odesolverstate &state, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        alglib_impl::odesolverrkck(const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, const_cast<alglib_impl::ae_vector*>(x.c_ptr()), m, eps, h, const_cast<alglib_impl::odesolverstate*>(state.c_ptr()), &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
         return;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
-        throw;
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    alglib_impl::odesolverrkck(y.c_ptr(), n, x.c_ptr(), m, eps, h, state.c_ptr(), &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return;
 }
 
 /*************************************************************************
@@ -249,7 +382,7 @@ INPUT PARAMETERS:
     X       -   points at which Y should be tabulated, array[0..M-1]
                 integrations starts at X[0], ends at X[M-1],  intermediate
                 values at X[i] are returned too.
-                SHOULD BE ORDERED BY ASCENDING OR BY DESCENDING!!!!
+                SHOULD BE ORDERED BY ASCENDING OR BY DESCENDING!
     M       -   number of intermediate points + first point + last point:
                 * M>2 means that you need both Y(X[M-1]) and M-2 values at
                   intermediate points
@@ -283,8 +416,10 @@ SEE ALSO
   -- ALGLIB --
      Copyright 01.09.2009 by Bochkanov Sergey
 *************************************************************************/
-void odesolverrkck(const real_1d_array &y, const real_1d_array &x, const double eps, const double h, odesolverstate &state)
+#if !defined(AE_NO_EXCEPTIONS)
+void odesolverrkck(const real_1d_array &y, const real_1d_array &x, const double eps, const double h, odesolverstate &state, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;    
     ae_int_t n;
     ae_int_t m;
@@ -292,77 +427,79 @@ void odesolverrkck(const real_1d_array &y, const real_1d_array &x, const double 
     n = y.length();
     m = x.length();
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        alglib_impl::odesolverrkck(const_cast<alglib_impl::ae_vector*>(y.c_ptr()), n, const_cast<alglib_impl::ae_vector*>(x.c_ptr()), m, eps, h, const_cast<alglib_impl::odesolverstate*>(state.c_ptr()), &_alglib_env_state);
+    if( setjmp(_break_jump) )
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    alglib_impl::odesolverrkck(y.c_ptr(), n, x.c_ptr(), m, eps, h, state.c_ptr(), &_alglib_env_state);
 
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
-        throw;
-    }
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return;
 }
+#endif
 
 /*************************************************************************
 This function provides reverse communication interface
 Reverse communication interface is not documented or recommended to use.
 See below for functions which provide better documented API
 *************************************************************************/
-bool odesolveriteration(const odesolverstate &state)
+bool odesolveriteration(odesolverstate &state, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        ae_bool result = alglib_impl::odesolveriteration(const_cast<alglib_impl::odesolverstate*>(state.c_ptr()), &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<bool*>(&result));
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
-        throw;
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    ae_bool result = alglib_impl::odesolveriteration(state.c_ptr(), &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return bool(result);
 }
 
 
 void odesolversolve(odesolverstate &state,
     void (*diff)(const real_1d_array &y, double x, real_1d_array &dy, void *ptr),
-    void *ptr){
+    void *ptr, const xparams _xparams){
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
-    if( diff==NULL )
-        throw ap_error("ALGLIB: error in 'odesolversolve()' (diff is NULL)");
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        while( alglib_impl::odesolveriteration(state.c_ptr(), &_alglib_env_state) )
-        {
-            if( state.needdy )
-            {
-                diff(state.y, state.x, state.dy, ptr);
-                continue;
-            }
-            throw ap_error("ALGLIB: unexpected error in 'odesolversolve'");
-        }
-        alglib_impl::ae_state_clear(&_alglib_env_state);
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    alglib_impl::ae_assert(diff!=NULL, "ALGLIB: error in 'odesolversolve()' (diff is NULL)", &_alglib_env_state);
+    while( alglib_impl::odesolveriteration(state.c_ptr(), &_alglib_env_state) )
     {
-        throw ap_error(_alglib_env_state.error_msg);
+        _ALGLIB_CALLBACK_EXCEPTION_GUARD_BEGIN
+                if( state.needdy )
+                {
+                    diff(state.y, state.x, state.dy, ptr);
+                    continue;
+                }
+        goto lbl_no_callback;
+        _ALGLIB_CALLBACK_EXCEPTION_GUARD_END
+    lbl_no_callback:
+        alglib_impl::ae_assert(ae_false, "ALGLIB: unexpected error in 'odesolversolve'", &_alglib_env_state);
     }
-    catch(...)
-    {
-        throw;
-    }
+    alglib_impl::ae_state_clear(&_alglib_env_state);
 }
 
 
@@ -390,25 +527,28 @@ OUTPUT PARAMETERS:
   -- ALGLIB --
      Copyright 01.09.2009 by Bochkanov Sergey
 *************************************************************************/
-void odesolverresults(const odesolverstate &state, ae_int_t &m, real_1d_array &xtbl, real_2d_array &ytbl, odesolverreport &rep)
+void odesolverresults(const odesolverstate &state, ae_int_t &m, real_1d_array &xtbl, real_2d_array &ytbl, odesolverreport &rep, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        alglib_impl::odesolverresults(const_cast<alglib_impl::odesolverstate*>(state.c_ptr()), &m, const_cast<alglib_impl::ae_vector*>(xtbl.c_ptr()), const_cast<alglib_impl::ae_matrix*>(ytbl.c_ptr()), const_cast<alglib_impl::odesolverreport*>(rep.c_ptr()), &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
         return;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-    catch(...)
-    {
-        throw;
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    alglib_impl::odesolverresults(state.c_ptr(), &m, xtbl.c_ptr(), ytbl.c_ptr(), rep.c_ptr(), &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return;
 }
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -418,12 +558,14 @@ void odesolverresults(const odesolverstate &state, ae_int_t &m, real_1d_array &x
 /////////////////////////////////////////////////////////////////////////
 namespace alglib_impl
 {
+#if defined(AE_COMPILE_ODESOLVER) || !defined(AE_PARTIAL_BUILD)
 static double odesolver_odesolvermaxgrow = 3.0;
 static double odesolver_odesolvermaxshrink = 10.0;
+static double odesolver_odesolverguaranteeddecay = 0.9;
 static void odesolver_odesolverinit(ae_int_t solvertype,
-     /* Real    */ ae_vector* y,
+     /* Real    */ const ae_vector* y,
      ae_int_t n,
-     /* Real    */ ae_vector* x,
+     /* Real    */ const ae_vector* x,
      ae_int_t m,
      double eps,
      double h,
@@ -431,7 +573,9 @@ static void odesolver_odesolverinit(ae_int_t solvertype,
      ae_state *_state);
 
 
+#endif
 
+#if defined(AE_COMPILE_ODESOLVER) || !defined(AE_PARTIAL_BUILD)
 
 
 /*************************************************************************
@@ -447,7 +591,7 @@ INPUT PARAMETERS:
     X       -   points at which Y should be tabulated, array[0..M-1]
                 integrations starts at X[0], ends at X[M-1],  intermediate
                 values at X[i] are returned too.
-                SHOULD BE ORDERED BY ASCENDING OR BY DESCENDING!!!!
+                SHOULD BE ORDERED BY ASCENDING OR BY DESCENDING!
     M       -   number of intermediate points + first point + last point:
                 * M>2 means that you need both Y(X[M-1]) and M-2 values at
                   intermediate points
@@ -481,9 +625,9 @@ SEE ALSO
   -- ALGLIB --
      Copyright 01.09.2009 by Bochkanov Sergey
 *************************************************************************/
-void odesolverrkck(/* Real    */ ae_vector* y,
+void odesolverrkck(/* Real    */ const ae_vector* y,
      ae_int_t n,
-     /* Real    */ ae_vector* x,
+     /* Real    */ const ae_vector* x,
      ae_int_t m,
      double eps,
      double h,
@@ -500,28 +644,13 @@ void odesolverrkck(/* Real    */ ae_vector* y,
     ae_assert(isfinitevector(y, n, _state), "ODESolverRKCK: Y contains infinite or NaN values!", _state);
     ae_assert(isfinitevector(x, m, _state), "ODESolverRKCK: Y contains infinite or NaN values!", _state);
     ae_assert(ae_isfinite(eps, _state), "ODESolverRKCK: Eps is not finite!", _state);
-    ae_assert(ae_fp_neq(eps,0), "ODESolverRKCK: Eps is zero!", _state);
+    ae_assert(ae_fp_neq(eps,(double)(0)), "ODESolverRKCK: Eps is zero!", _state);
     ae_assert(ae_isfinite(h, _state), "ODESolverRKCK: H is not finite!", _state);
     odesolver_odesolverinit(0, y, n, x, m, eps, h, state, _state);
 }
 
 
 /*************************************************************************
-One iteration of ODE solver.
-
-Called after inialization of State structure with OdeSolverXXX subroutine.
-See HTML docs for examples.
-
-INPUT PARAMETERS:
-    State   -   structure which stores algorithm state between subsequent
-                calls and which is used for reverse communication. Must be
-                initialized with OdeSolverXXX() call first.
-
-If subroutine returned False, algorithm have finished its work.
-If subroutine returned True, then user should:
-* calculate F(State.X, State.Y)
-* store it in State.DY
-Here State.X is real, State.Y and State.DY are arrays[0..N-1] of reals.
 
   -- ALGLIB --
      Copyright 01.09.2009 by Bochkanov Sergey
@@ -573,19 +702,19 @@ ae_bool odesolveriteration(odesolverstate* state, ae_state *_state)
     }
     else
     {
-        n = -983;
-        m = -989;
-        i = -834;
-        j = 900;
-        k = -287;
-        klimit = 364;
+        n = 359;
+        m = -58;
+        i = -919;
+        j = -909;
+        k = 81;
+        klimit = 255;
         gridpoint = ae_false;
-        xc = -338;
-        v = -686;
-        h = 912;
-        h2 = 585;
-        err = 497;
-        maxgrowpow = -271;
+        xc = -788.0;
+        v = 809.0;
+        h = 205.0;
+        h2 = -838.0;
+        err = 939.0;
+        maxgrowpow = -526.0;
     }
     if( state->rstate.stage==0 )
     {
@@ -607,16 +736,14 @@ ae_bool odesolveriteration(odesolverstate* state, ae_state *_state)
     n = state->n;
     m = state->m;
     h = state->h;
-    ae_vector_set_length(&state->y, n, _state);
-    ae_vector_set_length(&state->dy, n, _state);
-    maxgrowpow = ae_pow(odesolver_odesolvermaxgrow, 5, _state);
+    maxgrowpow = ae_pow(odesolver_odesolvermaxgrow, (double)(5), _state);
     state->repnfev = 0;
     
     /*
      * some preliminary checks for internal errors
      * after this we assume that H>0 and M>1
      */
-    ae_assert(ae_fp_greater(state->h,0), "ODESolver: internal error", _state);
+    ae_assert(ae_fp_greater(state->h,(double)(0)), "ODESolver: internal error", _state);
     ae_assert(m>1, "ODESolverIteration: internal error", _state);
     
     /*
@@ -633,11 +760,11 @@ ae_bool odesolveriteration(odesolverstate* state, ae_state *_state)
      * Check it for errors
      */
     ae_vector_set_length(&state->rka, 6, _state);
-    state->rka.ptr.p_double[0] = 0;
+    state->rka.ptr.p_double[0] = (double)(0);
     state->rka.ptr.p_double[1] = (double)1/(double)5;
     state->rka.ptr.p_double[2] = (double)3/(double)10;
     state->rka.ptr.p_double[3] = (double)3/(double)5;
-    state->rka.ptr.p_double[4] = 1;
+    state->rka.ptr.p_double[4] = (double)(1);
     state->rka.ptr.p_double[5] = (double)7/(double)8;
     ae_matrix_set_length(&state->rkb, 6, 5, _state);
     state->rkb.ptr.pp_double[1][0] = (double)1/(double)5;
@@ -657,14 +784,14 @@ ae_bool odesolveriteration(odesolverstate* state, ae_state *_state)
     state->rkb.ptr.pp_double[5][4] = (double)253/(double)4096;
     ae_vector_set_length(&state->rkc, 6, _state);
     state->rkc.ptr.p_double[0] = (double)37/(double)378;
-    state->rkc.ptr.p_double[1] = 0;
+    state->rkc.ptr.p_double[1] = (double)(0);
     state->rkc.ptr.p_double[2] = (double)250/(double)621;
     state->rkc.ptr.p_double[3] = (double)125/(double)594;
-    state->rkc.ptr.p_double[4] = 0;
+    state->rkc.ptr.p_double[4] = (double)(0);
     state->rkc.ptr.p_double[5] = (double)512/(double)1771;
     ae_vector_set_length(&state->rkcs, 6, _state);
     state->rkcs.ptr.p_double[0] = (double)2825/(double)27648;
-    state->rkcs.ptr.p_double[1] = 0;
+    state->rkcs.ptr.p_double[1] = (double)(0);
     state->rkcs.ptr.p_double[2] = (double)18575/(double)48384;
     state->rkcs.ptr.p_double[3] = (double)13525/(double)55296;
     state->rkcs.ptr.p_double[4] = (double)277/(double)14336;
@@ -684,7 +811,7 @@ ae_bool odesolveriteration(odesolverstate* state, ae_state *_state)
     ae_v_move(&state->ytbl.ptr.pp_double[0][0], 1, &state->yc.ptr.p_double[0], 1, ae_v_len(0,n-1));
     for(j=0; j<=n-1; j++)
     {
-        state->escale.ptr.p_double[j] = 0;
+        state->escale.ptr.p_double[j] = (double)(0);
     }
     i = 1;
 lbl_3:
@@ -780,7 +907,7 @@ lbl_10:
     /*
      * estimate error
      */
-    err = 0;
+    err = (double)(0);
     for(j=0; j<=n-1; j++)
     {
         if( !state->fraceps )
@@ -798,9 +925,9 @@ lbl_10:
              * Relative error is estimated
              */
             v = state->escale.ptr.p_double[j];
-            if( ae_fp_eq(v,0) )
+            if( ae_fp_eq(v,(double)(0)) )
             {
-                v = 1;
+                v = (double)(1);
             }
             err = ae_maxreal(err, ae_fabs(state->yn.ptr.p_double[j]-state->yns.ptr.p_double[j], _state)/v, _state);
         }
@@ -823,7 +950,7 @@ lbl_10:
     }
     if( ae_fp_greater(err,state->eps) )
     {
-        h = h2;
+        h = ae_minreal(h2, odesolver_odesolverguaranteeddecay*h, _state);
         goto lbl_6;
     }
     
@@ -907,7 +1034,7 @@ OUTPUT PARAMETERS:
   -- ALGLIB --
      Copyright 01.09.2009 by Bochkanov Sergey
 *************************************************************************/
-void odesolverresults(odesolverstate* state,
+void odesolverresults(const odesolverstate* state,
      ae_int_t* m,
      /* Real    */ ae_vector* xtbl,
      /* Real    */ ae_matrix* ytbl,
@@ -947,9 +1074,9 @@ void odesolverresults(odesolverstate* state,
 Internal initialization subroutine
 *************************************************************************/
 static void odesolver_odesolverinit(ae_int_t solvertype,
-     /* Real    */ ae_vector* y,
+     /* Real    */ const ae_vector* y,
      ae_int_t n,
-     /* Real    */ ae_vector* x,
+     /* Real    */ const ae_vector* x,
      ae_int_t m,
      double eps,
      double h,
@@ -974,12 +1101,12 @@ static void odesolver_odesolverinit(ae_int_t solvertype,
     /*
      * check parameters.
      */
-    if( (n<=0||m<1)||ae_fp_eq(eps,0) )
+    if( (n<=0||m<1)||ae_fp_eq(eps,(double)(0)) )
     {
         state->repterminationtype = -1;
         return;
     }
-    if( ae_fp_less(h,0) )
+    if( ae_fp_less(h,(double)(0)) )
     {
         h = -h;
     }
@@ -1019,7 +1146,7 @@ static void odesolver_odesolverinit(ae_int_t solvertype,
     /*
      * auto-select H if necessary
      */
-    if( ae_fp_eq(h,0) )
+    if( ae_fp_eq(h,(double)(0)) )
     {
         v = ae_fabs(x->ptr.p_double[1]-x->ptr.p_double[0], _state);
         for(i=2; i<=m-1; i++)
@@ -1036,106 +1163,88 @@ static void odesolver_odesolverinit(ae_int_t solvertype,
     state->m = m;
     state->h = h;
     state->eps = ae_fabs(eps, _state);
-    state->fraceps = ae_fp_less(eps,0);
+    state->fraceps = ae_fp_less(eps,(double)(0));
     ae_vector_set_length(&state->xg, m, _state);
     ae_v_move(&state->xg.ptr.p_double[0], 1, &x->ptr.p_double[0], 1, ae_v_len(0,m-1));
     if( ae_fp_greater(x->ptr.p_double[1],x->ptr.p_double[0]) )
     {
-        state->xscale = 1;
+        state->xscale = (double)(1);
     }
     else
     {
-        state->xscale = -1;
-        ae_v_muld(&state->xg.ptr.p_double[0], 1, ae_v_len(0,m-1), -1);
+        state->xscale = (double)(-1);
+        ae_v_muld(&state->xg.ptr.p_double[0], 1, ae_v_len(0,m-1), -1.0);
     }
     ae_vector_set_length(&state->yc, n, _state);
     ae_v_move(&state->yc.ptr.p_double[0], 1, &y->ptr.p_double[0], 1, ae_v_len(0,n-1));
     state->solvertype = solvertype;
     state->repterminationtype = 0;
+    
+    /*
+     * Allocate arrays
+     */
+    ae_vector_set_length(&state->y, n, _state);
+    ae_vector_set_length(&state->dy, n, _state);
 }
 
 
-ae_bool _odesolverstate_init(odesolverstate* p, ae_state *_state, ae_bool make_automatic)
+void _odesolverstate_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
-    if( !ae_vector_init(&p->yc, 0, DT_REAL, _state, make_automatic) )
-        return ae_false;
-    if( !ae_vector_init(&p->escale, 0, DT_REAL, _state, make_automatic) )
-        return ae_false;
-    if( !ae_vector_init(&p->xg, 0, DT_REAL, _state, make_automatic) )
-        return ae_false;
-    if( !ae_vector_init(&p->y, 0, DT_REAL, _state, make_automatic) )
-        return ae_false;
-    if( !ae_vector_init(&p->dy, 0, DT_REAL, _state, make_automatic) )
-        return ae_false;
-    if( !ae_matrix_init(&p->ytbl, 0, 0, DT_REAL, _state, make_automatic) )
-        return ae_false;
-    if( !ae_vector_init(&p->yn, 0, DT_REAL, _state, make_automatic) )
-        return ae_false;
-    if( !ae_vector_init(&p->yns, 0, DT_REAL, _state, make_automatic) )
-        return ae_false;
-    if( !ae_vector_init(&p->rka, 0, DT_REAL, _state, make_automatic) )
-        return ae_false;
-    if( !ae_vector_init(&p->rkc, 0, DT_REAL, _state, make_automatic) )
-        return ae_false;
-    if( !ae_vector_init(&p->rkcs, 0, DT_REAL, _state, make_automatic) )
-        return ae_false;
-    if( !ae_matrix_init(&p->rkb, 0, 0, DT_REAL, _state, make_automatic) )
-        return ae_false;
-    if( !ae_matrix_init(&p->rkk, 0, 0, DT_REAL, _state, make_automatic) )
-        return ae_false;
-    if( !_rcommstate_init(&p->rstate, _state, make_automatic) )
-        return ae_false;
-    return ae_true;
+    odesolverstate *p = (odesolverstate*)_p;
+    ae_touch_ptr((void*)p);
+    ae_vector_init(&p->yc, 0, DT_REAL, _state, make_automatic);
+    ae_vector_init(&p->escale, 0, DT_REAL, _state, make_automatic);
+    ae_vector_init(&p->xg, 0, DT_REAL, _state, make_automatic);
+    ae_vector_init(&p->y, 0, DT_REAL, _state, make_automatic);
+    ae_vector_init(&p->dy, 0, DT_REAL, _state, make_automatic);
+    ae_matrix_init(&p->ytbl, 0, 0, DT_REAL, _state, make_automatic);
+    ae_vector_init(&p->yn, 0, DT_REAL, _state, make_automatic);
+    ae_vector_init(&p->yns, 0, DT_REAL, _state, make_automatic);
+    ae_vector_init(&p->rka, 0, DT_REAL, _state, make_automatic);
+    ae_vector_init(&p->rkc, 0, DT_REAL, _state, make_automatic);
+    ae_vector_init(&p->rkcs, 0, DT_REAL, _state, make_automatic);
+    ae_matrix_init(&p->rkb, 0, 0, DT_REAL, _state, make_automatic);
+    ae_matrix_init(&p->rkk, 0, 0, DT_REAL, _state, make_automatic);
+    _rcommstate_init(&p->rstate, _state, make_automatic);
 }
 
 
-ae_bool _odesolverstate_init_copy(odesolverstate* dst, odesolverstate* src, ae_state *_state, ae_bool make_automatic)
+void _odesolverstate_init_copy(void* _dst, const void* _src, ae_state *_state, ae_bool make_automatic)
 {
+    odesolverstate       *dst = (odesolverstate*)_dst;
+    const odesolverstate *src = (const odesolverstate*)_src;
     dst->n = src->n;
     dst->m = src->m;
     dst->xscale = src->xscale;
     dst->h = src->h;
     dst->eps = src->eps;
     dst->fraceps = src->fraceps;
-    if( !ae_vector_init_copy(&dst->yc, &src->yc, _state, make_automatic) )
-        return ae_false;
-    if( !ae_vector_init_copy(&dst->escale, &src->escale, _state, make_automatic) )
-        return ae_false;
-    if( !ae_vector_init_copy(&dst->xg, &src->xg, _state, make_automatic) )
-        return ae_false;
+    ae_vector_init_copy(&dst->yc, &src->yc, _state, make_automatic);
+    ae_vector_init_copy(&dst->escale, &src->escale, _state, make_automatic);
+    ae_vector_init_copy(&dst->xg, &src->xg, _state, make_automatic);
     dst->solvertype = src->solvertype;
     dst->needdy = src->needdy;
     dst->x = src->x;
-    if( !ae_vector_init_copy(&dst->y, &src->y, _state, make_automatic) )
-        return ae_false;
-    if( !ae_vector_init_copy(&dst->dy, &src->dy, _state, make_automatic) )
-        return ae_false;
-    if( !ae_matrix_init_copy(&dst->ytbl, &src->ytbl, _state, make_automatic) )
-        return ae_false;
+    ae_vector_init_copy(&dst->y, &src->y, _state, make_automatic);
+    ae_vector_init_copy(&dst->dy, &src->dy, _state, make_automatic);
+    ae_matrix_init_copy(&dst->ytbl, &src->ytbl, _state, make_automatic);
     dst->repterminationtype = src->repterminationtype;
     dst->repnfev = src->repnfev;
-    if( !ae_vector_init_copy(&dst->yn, &src->yn, _state, make_automatic) )
-        return ae_false;
-    if( !ae_vector_init_copy(&dst->yns, &src->yns, _state, make_automatic) )
-        return ae_false;
-    if( !ae_vector_init_copy(&dst->rka, &src->rka, _state, make_automatic) )
-        return ae_false;
-    if( !ae_vector_init_copy(&dst->rkc, &src->rkc, _state, make_automatic) )
-        return ae_false;
-    if( !ae_vector_init_copy(&dst->rkcs, &src->rkcs, _state, make_automatic) )
-        return ae_false;
-    if( !ae_matrix_init_copy(&dst->rkb, &src->rkb, _state, make_automatic) )
-        return ae_false;
-    if( !ae_matrix_init_copy(&dst->rkk, &src->rkk, _state, make_automatic) )
-        return ae_false;
-    if( !_rcommstate_init_copy(&dst->rstate, &src->rstate, _state, make_automatic) )
-        return ae_false;
-    return ae_true;
+    ae_vector_init_copy(&dst->yn, &src->yn, _state, make_automatic);
+    ae_vector_init_copy(&dst->yns, &src->yns, _state, make_automatic);
+    ae_vector_init_copy(&dst->rka, &src->rka, _state, make_automatic);
+    ae_vector_init_copy(&dst->rkc, &src->rkc, _state, make_automatic);
+    ae_vector_init_copy(&dst->rkcs, &src->rkcs, _state, make_automatic);
+    ae_matrix_init_copy(&dst->rkb, &src->rkb, _state, make_automatic);
+    ae_matrix_init_copy(&dst->rkk, &src->rkk, _state, make_automatic);
+    _rcommstate_init_copy(&dst->rstate, &src->rstate, _state, make_automatic);
 }
 
 
-void _odesolverstate_clear(odesolverstate* p)
+void _odesolverstate_clear(void* _p)
 {
+    odesolverstate *p = (odesolverstate*)_p;
+    ae_touch_ptr((void*)p);
     ae_vector_clear(&p->yc);
     ae_vector_clear(&p->escale);
     ae_vector_clear(&p->xg);
@@ -1153,25 +1262,58 @@ void _odesolverstate_clear(odesolverstate* p)
 }
 
 
-ae_bool _odesolverreport_init(odesolverreport* p, ae_state *_state, ae_bool make_automatic)
+void _odesolverstate_destroy(void* _p)
 {
-    return ae_true;
+    odesolverstate *p = (odesolverstate*)_p;
+    ae_touch_ptr((void*)p);
+    ae_vector_destroy(&p->yc);
+    ae_vector_destroy(&p->escale);
+    ae_vector_destroy(&p->xg);
+    ae_vector_destroy(&p->y);
+    ae_vector_destroy(&p->dy);
+    ae_matrix_destroy(&p->ytbl);
+    ae_vector_destroy(&p->yn);
+    ae_vector_destroy(&p->yns);
+    ae_vector_destroy(&p->rka);
+    ae_vector_destroy(&p->rkc);
+    ae_vector_destroy(&p->rkcs);
+    ae_matrix_destroy(&p->rkb);
+    ae_matrix_destroy(&p->rkk);
+    _rcommstate_destroy(&p->rstate);
 }
 
 
-ae_bool _odesolverreport_init_copy(odesolverreport* dst, odesolverreport* src, ae_state *_state, ae_bool make_automatic)
+void _odesolverreport_init(void* _p, ae_state *_state, ae_bool make_automatic)
 {
+    odesolverreport *p = (odesolverreport*)_p;
+    ae_touch_ptr((void*)p);
+}
+
+
+void _odesolverreport_init_copy(void* _dst, const void* _src, ae_state *_state, ae_bool make_automatic)
+{
+    odesolverreport       *dst = (odesolverreport*)_dst;
+    const odesolverreport *src = (const odesolverreport*)_src;
     dst->nfev = src->nfev;
     dst->terminationtype = src->terminationtype;
-    return ae_true;
 }
 
 
-void _odesolverreport_clear(odesolverreport* p)
+void _odesolverreport_clear(void* _p)
 {
+    odesolverreport *p = (odesolverreport*)_p;
+    ae_touch_ptr((void*)p);
 }
 
 
+void _odesolverreport_destroy(void* _p)
+{
+    odesolverreport *p = (odesolverreport*)_p;
+    ae_touch_ptr((void*)p);
+}
+
+
+#endif
 
 }
 

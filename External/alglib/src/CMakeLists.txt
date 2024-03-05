@@ -1,1 +1,6 @@
-add_library(alglib STATIC ap.cpp fasttransforms.cpp solvers.cpp dataanalysis.cpp linalg.cpp alglibmisc.cpp integration.cpp specialfunctions.cpp diffequations.cpp optimization.cpp interpolation.cpp statistics.cpp alglibinternal.cpp)
+cmake_minimum_required(VERSION 3.5)
+project(alglib)
+
+FILE(GLOB ALGLIB_SRC_LIB "*.cpp")
+
+add_library(alglib STATIC ${ALGLIB_SRC_LIB})
