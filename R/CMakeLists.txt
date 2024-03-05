@@ -12,7 +12,7 @@ if (BUILD_R_PACKAGE)
 
   find_package(Eigen3 REQUIRED)
   link_libraries(Eigen3::Eigen)
-  
+
   include_directories(${PEER_SRC_DIR}/External/alglib)
   include_directories(${PEER_SRC_DIR}/include)
 
@@ -28,36 +28,42 @@ if (BUILD_R_PACKAGE)
   set_source_files_properties(peer.i PROPERTIES CPLUSPLUS ON)
   set_source_files_properties(peer.i PROPERTIES SWIG_FLAGS "-includeall")
   set_source_files_properties(peer.i PROPERTIES SWIG_FLAGS "-cpperraswarn")
-  swig_add_module(peer r peer.i)
-  swig_link_libraries(peer ${SWIGLINKLIBS})
+  swig_add_module(r-peer r peer.i)
+  swig_link_libraries(r-peer ${SWIGLINKLIBS})
 
   ADD_CUSTOM_COMMAND(
-    TARGET peer POST_BUILD
+    TARGET r-peer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
        ${PEER_SOURCE_DIR}/R/peer 
        ${PEER_SOURCE_DIR}/build/R/peer)
 
   ADD_CUSTOM_COMMAND(
-    TARGET peer POST_BUILD
+    TARGET r-peer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
-       ${PEER_SOURCE_DIR}/build/R/peerR_wrap.cxx
+       ${PEER_SOURCE_DIR}/build/R/CmakeFiles/r-peer.dir/peerR_wrap.cxx
        ${PEER_SOURCE_DIR}/build/R/peer/src/peerR_wrap.cpp)
 
   ADD_CUSTOM_COMMAND(
-    TARGET peer POST_BUILD
+    TARGET r-peer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
        ${PEER_SOURCE_DIR}/build/R/peer.R
        ${PEER_SOURCE_DIR}/build/R/peer/R/peer.R)
 
+  # CMAKE was putting a --jobserver-auth-string into MAKEFLAGS that breaks R CMD INSTALL
+
   if (BUILD_UNIVERSAL)
     ADD_CUSTOM_COMMAND(
-      TARGET peer POST_BUILD
-      COMMAND R CMD INSTALL --build ${PEER_SOURCE_DIR}/build/R/peer
+      TARGET r-peer POST_BUILD
+      COMMAND MAKEFLAGS=-j8 R CMD INSTALL --build ${PEER_SOURCE_DIR}/build/R/peer
       COMMENT "Building and installing the peer R package")
   else (BUILD_UNIVERSAL)
     ADD_CUSTOM_COMMAND(
-      TARGET peer POST_BUILD
-      COMMAND R CMD INSTALL --no-multiarch --build ${PEER_SOURCE_DIR}/build/R/peer
+      TARGET r-peer POST_BUILD
+      COMMAND env
+      COMMENT "print env")
+    ADD_CUSTOM_COMMAND(
+      TARGET r-peer POST_BUILD
+      COMMAND MAKEFLAGS=-j8 R CMD INSTALL --no-multiarch --build ${PEER_SOURCE_DIR}/build/R/peer
       COMMENT "Building and installing the peer R package")
   endif (BUILD_UNIVERSAL)
 

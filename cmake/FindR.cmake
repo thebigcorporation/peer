@@ -1,3 +1,8 @@
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(CMAKE_FIND_APPBUNDLE "LAST")
+endif()
+
 # find the R binary
 
 MESSAGE(STATUS "Looking for R executable")
