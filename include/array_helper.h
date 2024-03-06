@@ -12,10 +12,7 @@
 
 #include <Eigen/Eigen>
 
-#include "ap.h"
-
 using namespace Eigen;
-using alglib::randomreal;
 
 double randn(double mu=0.0, double sigma=1.0);
 

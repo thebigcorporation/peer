@@ -33,12 +33,6 @@ jobs:
         activate-environment: peer
         environment-file: peer-environment.yml
 
-    - name: Point cmake at conda environment. This should not be necessary.
-      shell: bash
-      run: |
-        export CMAKE_PREFIX_PATH=$CONDA_PREFIX
-        env
-
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
@@ -47,3 +41,33 @@ jobs:
     - name: Build
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Assemble R source package
+      run: |
+        pushd cran
+        bash create_source_new.sh
+        R CMD BUILD peer
+        popd
+    
+    - name: Assemble Python source package
+      run: |
+        pushd standalone_python
+        bash create_python_package.sh
+        python -m build peer
+        popd
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: peertool
+        path: build/src/peertool
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: R and Python packages
+        path: |
+          cran/peer_*.tar.gz
+          standalone_python/peer/dist/peer-*.tar.gz
+
+    

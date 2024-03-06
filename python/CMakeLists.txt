@@ -90,9 +90,11 @@ set(CMAKE_SWIG_FLAGS "")
 set_source_files_properties(peer.i PROPERTIES CPLUSPLUS ON)
 set_source_files_properties(peer.i PROPERTIES SWIG_FLAGS "-includeall")
 set_source_files_properties(peer.i PROPERTIES SWIG_FLAGS "-cpperraswarn")
-swig_add_module(peer python peer.i)
+swig_add_library(peer 
+   LANGUAGE python
+   SOURCES peer.i
+   OUTPUT_DIR ${PEER_SOURCE_DIR}/python)
 swig_link_libraries(peer ${SWIGLINKLIBS} peerlib alglib)
-
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")	 
   # Mac OS X specific code
@@ -100,7 +102,11 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   SET(CMAKE_MODULE_LINKER_FLAGS "-undefined dynamic_lookup")
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
-
+ADD_CUSTOM_COMMAND(
+   TARGET peer POST_BUILD
+   COMMAND ${CMAKE_COMMAND} -E copy
+      ${PEER_SOURCE_DIR}/python/setup.py
+      ${PEER_BINARY_DIR}/python/setup.py)
 
 #Install python .so and python wrapper
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/_peer.so DESTINATION ${PYTHON_INSTDIR})
