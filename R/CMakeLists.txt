@@ -33,7 +33,7 @@ if (BUILD_R_PACKAGE)
   swig_add_library(r-peer 
     LANGUAGE R 
     SOURCES peer.i
-    OUTPUT_DIR ${PEER_SOURCE_DIR}/R/peer)
+    OUTPUT_DIR ${PEER_SOURCE_DIR}/R)
   swig_link_libraries(r-peer ${SWIGLINKLIBS})
 
   ADD_CUSTOM_COMMAND(
@@ -45,13 +45,13 @@ if (BUILD_R_PACKAGE)
   ADD_CUSTOM_COMMAND(
     TARGET r-peer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
-       ${PEER_SOURCE_DIR}/build/R/peer/peerR_wrap.cxx
+       ${PEER_SOURCE_DIR}/R/peerR_wrap.cxx
        ${PEER_SOURCE_DIR}/build/R/peer/src/peerR_wrap.cpp)
 
   ADD_CUSTOM_COMMAND(
     TARGET r-peer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
-       ${PEER_SOURCE_DIR}/build/R/peer/peer.R
+       ${PEER_SOURCE_DIR}/R/peer.R
        ${PEER_SOURCE_DIR}/build/R/peer/R/peer.R)
 
   # CMAKE was putting a --jobserver-auth-string into MAKEFLAGS that breaks R CMD INSTALL
