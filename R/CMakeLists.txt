@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.20)
 
 #oli: I changed this to FindR which seems quite stable here
 find_package(R REQUIRED)
@@ -25,10 +25,15 @@ if (BUILD_R_PACKAGE)
   #OLI: changed to LIBR_SO
   SET(SWIGLINKLIBS ${LIBR_SO} alglib peerlib)
 
+  
+
   set_source_files_properties(peer.i PROPERTIES CPLUSPLUS ON)
   set_source_files_properties(peer.i PROPERTIES SWIG_FLAGS "-includeall")
   set_source_files_properties(peer.i PROPERTIES SWIG_FLAGS "-cpperraswarn")
-  swig_add_module(r-peer r peer.i)
+  swig_add_library(r-peer 
+    LANGUAGE R 
+    SOURCES peer.i
+    OUTPUT_DIR ${PEER_SOURCE_DIR}/R/peer)
   swig_link_libraries(r-peer ${SWIGLINKLIBS})
 
   ADD_CUSTOM_COMMAND(
@@ -40,13 +45,13 @@ if (BUILD_R_PACKAGE)
   ADD_CUSTOM_COMMAND(
     TARGET r-peer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
-       ${PEER_SOURCE_DIR}/build/R/CmakeFiles/r-peer.dir/peerR_wrap.cxx
+       ${PEER_SOURCE_DIR}/build/R/peer/peerR_wrap.cxx
        ${PEER_SOURCE_DIR}/build/R/peer/src/peerR_wrap.cpp)
 
   ADD_CUSTOM_COMMAND(
     TARGET r-peer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
-       ${PEER_SOURCE_DIR}/build/R/peer.R
+       ${PEER_SOURCE_DIR}/build/R/peer/peer.R
        ${PEER_SOURCE_DIR}/build/R/peer/R/peer.R)
 
   # CMAKE was putting a --jobserver-auth-string into MAKEFLAGS that breaks R CMD INSTALL

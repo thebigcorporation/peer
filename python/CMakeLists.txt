@@ -1,7 +1,7 @@
 # Python cmake build script
 # This requires swig, python sources and numpy to be installed
 # See README.txt for documentaton on how to circumvent potential problems in detecting the libraries
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.20)
 
 
 find_package(SWIG REQUIRED)

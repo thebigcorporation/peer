@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.20)
 project(PEER)
 set(CMAKE_CXX_STANDARD 14)
 
@@ -75,8 +75,10 @@ endif (BUILD_UNIVERSAL)
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 
+set(CMAKE_FIND_DEBUG_MODE TRUE)
 find_package(Eigen3 REQUIRED NO_MODULE)
 link_libraries(Eigen3::Eigen)
+set(CMAKE_FIND_DEBUG_MODE FALSE)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKE_SWIG_FLAGS "")
