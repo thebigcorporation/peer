@@ -46,14 +46,13 @@ jobs:
       run: |
         pushd cran
         bash create_source_new.sh
-        R CMD BUILD peer
+        R CMD build peer*.tar.gz
         popd
     
     - name: Assemble Python source package
       run: |
         pushd standalone_python
         bash create_python_package.sh
-        python -m build peer
         popd
 
     - name: Upload artifacts

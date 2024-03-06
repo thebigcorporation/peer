@@ -34,4 +34,4 @@ ln -s $(pwd)/../R/peer/DESCRIPTION ./peer/DESCRIPTION
 ln -s $(pwd)/../R/peer/R/plot.R ./peer/R/plot.R
 
 #3. create .tar.gz with symlinks dereferenced
-tar cfzh ./peer.tgz ./peer
+tar cfzh ./peer.tar.gz ./peer
