@@ -6,3 +6,4 @@ dependencies:
   - numpy
   - swig
   - eigen
+  - python-build
