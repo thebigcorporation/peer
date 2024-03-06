@@ -1,6 +1,7 @@
 build/*
 CMakeFiles/*
 cran/peer/
+cran/*.tar.gz
 
 *.Rcheck
 

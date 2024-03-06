@@ -1,4 +1,5 @@
 #!/bin/bash
+# Build an R source package for peer
 
 #1. copy template into directoyr "peer"
 rm -Rf ./peer
@@ -34,4 +35,4 @@ ln -s $(pwd)/../R/peer/DESCRIPTION ./peer/DESCRIPTION
 ln -s $(pwd)/../R/peer/R/plot.R ./peer/R/plot.R
 
 #3. create .tar.gz with symlinks dereferenced
-tar cfzh ./peer.tar.gz ./peer
+R CMD build peer
