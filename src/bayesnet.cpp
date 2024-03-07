@@ -8,14 +8,14 @@
  */
 
 #include <Eigen/Eigen>
+#include <boost/math/special_functions/gamma.hpp>
 
 #include "bayesnet.h"
-#include "specialfunctions.h"
 #include "ossolog.h"
 
 using namespace Eigen;
-using alglib::lngamma;
-using alglib::psi;
+using boost::math::lgamma;
+using boost::math::digamma;
 
 double cNode::entropy() {return 0;}
 double cNode::calcBound(cBayesNet &net) {return 0;}
@@ -35,20 +35,18 @@ cDirichletNode::cDirichletNode(int dim, float prior_val){
 
 
 double cDirichletNode::entropy(){
-	double temp = 0;
-	double ent = -lngamma(a.sum(), temp);
-	for (int i=0; i < a.rows(); i++) {ent += lngamma(a(i), temp);}
-	ent += (a.sum() - a.rows())*psi(a.sum());
-//	ent -= (a - PVector::Ones(a.rows()))*psi();
-	for (int i=0; i < a.rows(); i++){ent -= (a(i) - 1)*psi(a(i));}
+	double ent = -lgamma(a.sum());
+	for (int i=0; i < a.rows(); i++) {ent += lgamma(a(i));}
+	ent += (a.sum() - a.rows())*digamma(a.sum());
+//	ent -= (a - PVector::Ones(a.rows()))*digamma();
+	for (int i=0; i < a.rows(); i++){ent -= (a(i) - 1)*digamma(a(i));}
 	return ent;
 }
 
 
 double cDirichletNode::calcBound(cBayesNet* net){
-	double temp = 0;	
-	double bound = ((a0 - PVector::Ones(a0.rows()))*lnE).sum() - lngamma(a0.sum(), temp);
-	for (int i=0; i < a0.rows(); i++) { bound += lngamma(a0(i), temp); }
+	double bound = ((a0 - PVector::Ones(a0.rows()))*lnE).sum() - lgamma(a0.sum());
+	for (int i=0; i < a0.rows(); i++) { bound += lgamma(a0(i)); }
 	return bound + entropy();
 }
 
@@ -81,14 +79,13 @@ cGammaNode::cGammaNode(int dim, float prior_val_a, float prior_val_b, PMatrix E1
 
 
 double cGammaNode::entropy(){
-	double temp = 0;
 	double ent = 0;
 	
 	for (int i=0; i < a.rows(); i++) {
 	    ent += a(i);
 		ent -= log(b(i));
-		ent += lngamma(a(i), temp);
-		ent += (1. - a(i))*psi(a(i));
+		ent += lgamma(a(i));
+		ent += (1. - a(i))*digamma(a(i));
 	}
 	return ent;
 }
@@ -98,12 +95,11 @@ double cGammaNode::entropy(){
 double cGammaNode::calcBound(cBayesNet* net){
 
 	double bound = 0;
-	double temp = 0;	
 	for (int i=0; i < lnE.rows(); i++) { 
 		bound += pa*log(pb);
 		bound += (pa - 1.)*lnE(i);
 		bound -= pb*E1(i);
-		bound -= lngamma(pa, temp);
+		bound -= lgamma(pa);
 	}
 	return bound + entropy();
 }
@@ -113,7 +109,7 @@ void cGammaNode::updateMoments(){
 	
 	for (int i=0; i < lnE.rows(); i++){
 		E1(i) = a(i)/b(i);
-		lnE(i) = psi(a(i)) - log(b(i));
+		lnE(i) = digamma(a(i)) - log(b(i));
 	}
 }
 

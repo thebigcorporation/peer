@@ -13,7 +13,6 @@ if (BUILD_R_PACKAGE)
   find_package(Eigen3 REQUIRED)
   link_libraries(Eigen3::Eigen)
 
-  include_directories(${PEER_SRC_DIR}/External/alglib)
   include_directories(${PEER_SRC_DIR}/include)
 
   set(CMAKE_SWIG_FLAGS "")
@@ -23,9 +22,7 @@ if (BUILD_R_PACKAGE)
   include_directories(${R_INCLUDEDIR}/i386)
 
   #OLI: changed to LIBR_SO
-  SET(SWIGLINKLIBS ${LIBR_SO} alglib peerlib)
-
-  
+  SET(SWIGLINKLIBS ${LIBR_SO} peerlib)
 
   set_source_files_properties(peer.i PROPERTIES CPLUSPLUS ON)
   set_source_files_properties(peer.i PROPERTIES SWIG_FLAGS "-includeall")

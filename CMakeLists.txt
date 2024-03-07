@@ -78,6 +78,9 @@ include(${SWIG_USE_FILE})
 find_package(Eigen3 REQUIRED NO_MODULE)
 link_libraries(Eigen3::Eigen)
 
+find_package(Boost REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKE_SWIG_FLAGS "")
 
@@ -91,10 +94,8 @@ add_definitions(-g -Wextra -D_BSD_SOURCE)
 #set(CMAKE_CXX_FLAGS "-fPIC -O3 -march=core2")
 set(CMAKE_CXX_FLAGS "-fPIC")
 
-include_directories(./External/alglib/src)
 
 #add Cmake modules
-add_subdirectory(./External/alglib/src)
 add_subdirectory(./External/csv_parser)
 add_subdirectory(./src)
 

@@ -81,7 +81,7 @@ include_directories(${NUMPY_INCLUDE_DIR})
 find_package(Eigen3 REQUIRED)
 link_libraries(Eigen3::Eigen)
 
-include_directories(${PEER_SRC_DIR}/External/alglib)
+# include_directories(${PEER_SRC_DIR}/External/alglib)
 include_directories(${PEER_SRC_DIR}/include)
 
 set(CMAKE_SWIG_FLAGS "")
@@ -94,7 +94,7 @@ swig_add_library(peer
    LANGUAGE python
    SOURCES peer.i
    OUTPUT_DIR ${PEER_SOURCE_DIR}/python)
-swig_link_libraries(peer ${SWIGLINKLIBS} peerlib alglib)
+swig_link_libraries(peer ${SWIGLINKLIBS} peerlib)
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")	 
   # Mac OS X specific code

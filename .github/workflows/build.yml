@@ -80,14 +80,10 @@ jobs:
       with:
         name: r-python-packages
 
-    - name: unzip packages
-      run: |
-        unzip r-python-packages.zip
-
     - name: cibuildwheel for python
       uses: pypa/cibuildwheel@v2.16.5
       with:
-        package-dir: r-python-packages/standalone_python/peer/dist/peer-*.tar.gz
+        package-dir: standalone_python/peer/dist/peer-*.tar.gz
       env:
         CIBW_ARCHS_MACOS: x86_64 aarch64
 
@@ -100,4 +96,4 @@ jobs:
       uses: r-lib/actions/setup-r@v2
 
     - name: Test R on this platform
-      run: R CMD check --as-cran r-python-packages/cran/peer_*.tar.gz
+      run: R CMD check --as-cran cran/peer_*.tar.gz

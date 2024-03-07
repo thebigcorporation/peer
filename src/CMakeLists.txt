@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
 
-include_directories(../External/alglib)
 include_directories(../External/csv_parser/include) #remove this once deemed safe
 include_directories(../External/csv_parser/include/csv_parser)
 include_directories(../External/tclap)
@@ -30,7 +29,7 @@ if (BUILD_PEERTOOL)
     PRIVATE 
     ../External/
     ../External/yaml-cpp/include)
-  target_link_libraries(peertool peerlib alglib csv_parser yaml-cpp)
+  target_link_libraries(peertool peerlib csv_parser yaml-cpp)
 
   INSTALL(TARGETS peertool
      RUNTIME DESTINATION bin)
