@@ -1,6 +1,6 @@
 # This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
 # See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
-name: CMake on a single platform
+name: Package and compile Peer across OSes and archs
 
 on:
   push:
@@ -69,10 +69,11 @@ jobs:
           standalone_python/peer/dist/peer-*.tar.gz
 
   cibuildwheel:
-    runs-on: 
-    - ubuntu-latest
-    - macos-latest
-    - windows-latest
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
     needs: build
     steps:
     - uses: actions/download-artifact@v4
@@ -87,6 +88,8 @@ jobs:
       uses: pypa/cibuildwheel@v2.16.5
       with:
         package-dir: r-python-packages/standalone_python/peer/dist/peer-*.tar.gz
+      env:
+        CIBW_ARCHS_MACOS: x86_64 aarch64
 
     - uses: actions/upload-artifact@v4
       with:
