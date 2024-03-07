@@ -25,4 +25,4 @@ ln -s $(pwd)/../include/vbfa.h ./peer/src/
 ln -s $(pwd)/../python/peerPYTHON_wrap.cxx ./peer/src/
 ln -s $(pwd)/../python/peer.py ./peer/
 
-python -m build peer
+python -m build --sdist peer
