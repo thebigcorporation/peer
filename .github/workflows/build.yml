@@ -82,6 +82,8 @@ jobs:
 
     - name: Install boost. We need only headers
       uses: MarkusJx/install-boost@v2.4.5
+      with:
+        boost_version: 1.84.0
 
     - name: cibuildwheel for python
       uses: pypa/cibuildwheel@v2.16.5
