@@ -85,7 +85,7 @@ jobs:
       with:
         package-dir: standalone_python/peer/dist/peer-0.0.0.tar.gz
       env:
-        CIBW_ARCHS_MACOS: x86_64 aarch64
+        CIBW_ARCHS_MACOS: x86_64 arm64
 
     - uses: actions/upload-artifact@v4
       with:
