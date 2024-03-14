@@ -92,7 +92,7 @@ add_definitions(-g -Wextra -D_BSD_SOURCE)
 #fPic while compiling on
 #this seems to be needed on some linux systems
 #set(CMAKE_CXX_FLAGS "-fPIC -O3 -march=core2")
-set(CMAKE_CXX_FLAGS "-fPIC")
+set(CMAKE_CXX_FLAGS "-fPIC -O3")
 
 
 #add Cmake modules

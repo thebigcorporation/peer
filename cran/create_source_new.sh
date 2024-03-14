@@ -31,7 +31,7 @@ ln -s $(pwd)/../build/R/peer/R/peer.R ./peer/R/peer.R
 
 ln -s $(pwd)/../R/peer/man ./peer/man
 ln -s $(pwd)/../R/peer/NAMESPACE ./peer/NAMESPACE
-ln -s $(pwd)/../R/peer/DESCRIPTION ./peer/DESCRIPTION
+# ln -s $(pwd)/../R/peer/DESCRIPTION ./peer/DESCRIPTION
 ln -s $(pwd)/../R/peer/R/plot.R ./peer/R/plot.R
 
 #3. create .tar.gz with symlinks dereferenced
