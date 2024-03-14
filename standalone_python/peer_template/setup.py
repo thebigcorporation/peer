@@ -21,6 +21,7 @@ setup(
     name="peer",
     description="Functions that work on series",
     author="Bill Spotz",
+    version="2.0.0",
     py_modules=["peer"],
     ext_modules=[_peer],
     setup_requires=["numpy"],

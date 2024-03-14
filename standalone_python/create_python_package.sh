@@ -9,6 +9,7 @@ cp -R ./peer_template ./peer
 ln -s $(pwd)/../include/ossolog.h ./peer/src/
 
 ln -s $(pwd)/../External/Eigen ./peer/src/Eigen
+ln -s $(pwd)/../External/boost ./peer/src/boost
 
 ln -s $(pwd)/../src/array_helper.cpp ./peer/src/
 ln -s $(pwd)/../include/array_helper.h ./peer/src/
