@@ -25,5 +25,6 @@ setup(
     ext_modules=[_peer],
     setup_requires=["numpy"],
     install_requires=["numpy"],
+    python_requires='>=3.7.0',
     include_dirs=[numpy.get_include(), "./src"],
 )
