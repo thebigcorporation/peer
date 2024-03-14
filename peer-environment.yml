@@ -3,6 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - r-devtools
+  - boost
   - numpy
   - swig
   - eigen
