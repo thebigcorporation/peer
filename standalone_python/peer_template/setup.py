@@ -3,6 +3,7 @@
 # System imports
 from distutils.core import *
 from distutils import sysconfig
+from glob import glob
 
 # Third-party modules - we depend on numpy for everything
 import numpy
@@ -10,9 +11,9 @@ import numpy
 # _Series extension module
 _peer = Extension(
     "_peer",
-    ["src/peerPYTHON_wrap.cxx"],
+    sources=glob("src/*.cpp"),
     include_dirs=[numpy.get_include(), "./src"],
-    define_macros=[("SWIG", None)],
+    define_macros=[("SWIG", None)]
 )
 
 # Series setup

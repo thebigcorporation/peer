@@ -10,10 +10,8 @@ import numpy
 # _Series extension module
 _peer = Extension("_peer",
                     ["peerPYTHON_wrap.cxx"],
-                    include_dirs = [numpy.get_include(),"../include","./../External/alglib/src","./../External"],
-                    library_dirs = ['lib','./'],
+                    include_dirs = [numpy.get_include(),"../include","./../External", "../src"],
                   define_macros  = [('SWIG',None)],
-                  libraries = ["peerlib"]
                     )
 
 # Series setup
