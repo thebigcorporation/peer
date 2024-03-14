@@ -61,10 +61,6 @@ if (BUILD_R_PACKAGE)
   else (BUILD_UNIVERSAL)
     ADD_CUSTOM_COMMAND(
       TARGET r-peer POST_BUILD
-      COMMAND env
-      COMMENT "print env")
-    ADD_CUSTOM_COMMAND(
-      TARGET r-peer POST_BUILD
       COMMAND MAKEFLAGS=-j8 R CMD INSTALL --no-multiarch --build ${PEER_SOURCE_DIR}/build/R/peer
       COMMENT "Building and installing the peer R package")
   endif (BUILD_UNIVERSAL)
