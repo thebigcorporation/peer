@@ -1,11 +1,10 @@
 #!/bin/bash
 
-#1. copy template into directoyr "peer"
+#1. copy template into directory "peer"
 rm -Rf ./peer
 cp -R ./peer_template ./peer
 
 #2. create symlinks
-# ln -s $(pwd)/../External/alglib/src/*.{h,cpp} ./peer/src/
 
 ln -s $(pwd)/../include/ossolog.h ./peer/src/
 
