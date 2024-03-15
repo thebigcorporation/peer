@@ -59,7 +59,7 @@ jobs:
         # Use "renv" to retrieve R version recorded in renv.lock file.
 
     - name: Install R dependencies
-      run: Rscript -e 'install.packages(c("BH", "RcppEigen"))
+      run: Rscript -e 'install.packages(c("BH", "RcppEigen"))'
 
     - name: Install R package
       run: R CMD INSTALL cran/peer_2.0.tar.gz
