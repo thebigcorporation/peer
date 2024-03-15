@@ -62,4 +62,4 @@ jobs:
       run: Rscript -e 'install.packages(c("BH", "RcppEigen"))'
 
     - name: Install R package
-      run: R CMD INSTALL peer
+      run: R CMD INSTALL peer_2.0.tar.gz
