@@ -1,4 +1,4 @@
-name: Package r-peer for R only, with external headers
+name: Package R
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
         shell: bash -el {0}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Setup Miniconda   
       uses: conda-incubator/setup-miniconda@v3.0.3
