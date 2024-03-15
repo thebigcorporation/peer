@@ -10,6 +10,7 @@ cran/*.tar.gz
 
 # Built python package
 standalone_python/peer
+conda_forge_python/peer
 python/peer.py
 python/peerPYTHON_wrap.cxx
 
