@@ -13,7 +13,8 @@ _peer = Extension(
     "_peer",
     sources=glob("src/*.cpp"),
     include_dirs=[numpy.get_include(), "./src"],
-    define_macros=[("SWIG", None)]
+    define_macros=[("SWIG", None)],
+    extra_compile_args = ["-std=c++14"], 
 )
 
 # Series setup
