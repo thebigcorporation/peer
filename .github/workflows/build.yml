@@ -83,7 +83,7 @@ jobs:
     - name: cibuildwheel for python
       uses: pypa/cibuildwheel@v2.16.5
       with:
-        package-dir: standalone_python/peer/dist/peer-0.0.0.tar.gz
+        package-dir: standalone_python/peer/dist/peer-2.0.0.tar.gz
       env:
         CIBW_ARCHS_MACOS: x86_64 arm64
 
