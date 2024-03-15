@@ -1,0 +1,65 @@
+name: Package r-peer for R only, with external headers
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
+    # You can convert this to a matrix build if you need cross-platform coverage.
+    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Miniconda   
+      uses: conda-incubator/setup-miniconda@v3.0.3
+      with:
+        mamba-version: "*"
+        channel-priority: true
+        activate-environment: peer
+        environment-file: peer-environment.yml
+
+    - name: Assemble R source package
+      run: |
+        pushd cran
+        bash package_r_only.sh
+        popd
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: r-package
+        path: cran/peer_*.tar.gz
+
+  r-cran-install:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    needs: build
+    steps:
+    - name: Download package
+      uses: actions/download-artifact@v4
+      with:
+        name: r-package
+
+    - name: Setup R
+      uses: r-lib/actions/setup-r@v2
+      with:
+        r-version: '3.5.3' # The R version to download (if necessary) and use.
+        # Use "renv" to retrieve R version recorded in renv.lock file.
+
+    - name: Install R dependencies
+      run: Rscript -e 'install.packages(c("BH", "RcppEigen"))
+
+    - name: Install R package
+      run: R CMD INSTALL cran/peer_2.0.tar.gz

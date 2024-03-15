@@ -1,15 +1,22 @@
 #!/bin/bash
 set -euxo pipefail
+# Build an R source package for peer
+# This one vendors all dependencies, meaning it includes all headers
+# it needs
+
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 pushd "$SCRIPT_DIR"
 
-#1. copy template into directory "peer"
+#0. Run SWIG over peer R interface
+pushd ../R
+swig -r -c++ -I../include peer.i
+
+#1. copy template into directoyr "peer"
 rm -Rf ./peer
 cp -R ./peer_template ./peer
 
 #2. create symlinks
-
 ln -s $(pwd)/../include/ossolog.h ./peer/src/
 
 ln -s $(pwd)/../External/Eigen ./peer/src/Eigen
@@ -26,7 +33,16 @@ ln -s $(pwd)/../include/sparsefa.h ./peer/src/
 ln -s $(pwd)/../src/vbfa.cpp ./peer/src/
 ln -s $(pwd)/../include/vbfa.h ./peer/src/
 
-ln -s $(pwd)/../python/peerPYTHON_wrap.cxx ./peer/src/peerPYTHON_wrap.cpp
-ln -s $(pwd)/../python/peer.py ./peer/
+ln -s $(pwd)/../build/R/peer/src/peerR_wrap.cpp ./peer/src/peerR_wrap.cpp
+ln -s $(pwd)/../build/R/peer/R/peer.R ./peer/R/peer.R
 
-python -m build --sdist peer
+#we don't need the so in there..
+#ln -s $(pwd)/../build/R/libpeer.so ./peer/src/libpeer.so
+
+ln -s $(pwd)/../R/peer/man ./peer/man
+ln -s $(pwd)/../R/peer/NAMESPACE ./peer/NAMESPACE
+# ln -s $(pwd)/../R/peer/DESCRIPTION ./peer/DESCRIPTION
+ln -s $(pwd)/../R/peer/R/plot.R ./peer/R/plot.R
+
+#3. create .tar.gz with symlinks dereferenced
+R CMD build peer
