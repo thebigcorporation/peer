@@ -36,5 +36,7 @@ ln -s $(pwd)/../R/peer/man ./peer/man
 ln -s $(pwd)/../R/peer/NAMESPACE ./peer/NAMESPACE
 ln -s $(pwd)/../R/peer/R/plot.R ./peer/R/plot.R
 
+ln -s $(pwd)/../LICENSE ./peer/
+
 #3. create .tar.gz with symlinks dereferenced
 R CMD build peer
