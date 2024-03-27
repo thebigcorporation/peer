@@ -33,3 +33,5 @@ ln -s $(pwd)/../python/peer.py ./peer/
 ln -s $(pwd)/../LICENSE ./peer/
 
 python -m build --sdist peer
+
+popd

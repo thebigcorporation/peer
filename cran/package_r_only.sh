@@ -40,3 +40,5 @@ ln -s $(pwd)/../LICENSE ./peer/
 
 #3. create .tar.gz with symlinks dereferenced
 R CMD build peer
+
+popd
