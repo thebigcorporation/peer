@@ -95,41 +95,41 @@ ENDIF(NOT LIBR_SO)
 # However, we can't do this unconditionally,
 # as this is not available in some configurations of R
 
-MESSAGE(STATUS "Checking whether we should link against Rlapack library")
-FIND_LIBRARY(LIBR_LAPACK
-	Rlapack
-	PATHS ${R_SHAREDLIBDIR}
-	NO_DEFAULT_PATH)
-IF(NOT LIBR_LAPACK)
-	MESSAGE(STATUS "No, it does not exist in ${R_SHAREDLIBDIR}")
-ELSE(NOT LIBR_LAPACK)
-	MESSAGE(STATUS "Yes, ${LIBR_LAPACK} exists")
-	SET(R_USED_LIBS ${R_USED_LIBS} Rlapack)
-	IF(WIN32 OR APPLE)
-	ELSE(WIN32 OR APPLE)
+#MESSAGE(STATUS "Checking whether we should link against Rlapack library")
+#FIND_LIBRARY(LIBR_LAPACK
+#	Rlapack
+#	PATHS ${R_SHAREDLIBDIR}
+#	NO_DEFAULT_PATH)
+#IF(NOT LIBR_LAPACK)
+#	MESSAGE(STATUS "No, it does not exist in ${R_SHAREDLIBDIR}")
+#ELSE(NOT LIBR_LAPACK)
+#	MESSAGE(STATUS "Yes, ${LIBR_LAPACK} exists")
+#	SET(R_USED_LIBS ${R_USED_LIBS} Rlapack)
+#	IF(WIN32 OR APPLE)
+#	ELSE(WIN32 OR APPLE)
 		# needed when linking to Rlapack on linux for some unknown reason.
 		# apparently not needed on windows (let's see, when it comes back to bite us, though)
 		# and compiling on windows is hard enough even without requiring libgfortran, too.
-		SET(R_USED_LIBS ${R_USED_LIBS} gfortran)
-	ENDIF(WIN32 OR APPLE)
-ENDIF(NOT LIBR_LAPACK)
+#		SET(R_USED_LIBS ${R_USED_LIBS} gfortran)
+#	ENDIF(WIN32 OR APPLE)
+#ENDIF(NOT LIBR_LAPACK)
 
 # for at least some versions of R, we seem to have to link against -lRlapack. Else loading some
 # R packages will fail due to unresolved symbols, or we can't link against -lR.
 # However, we can't do this unconditionally,
 # as this is not available in some configurations of R
 
-MESSAGE(STATUS "Checking whether we should link against Rblas library")
-FIND_LIBRARY(LIBR_BLAS
-	Rblas
-	PATHS ${R_SHAREDLIBDIR}
-	NO_DEFAULT_PATH)
-IF(NOT LIBR_BLAS)
-	MESSAGE(STATUS "No, it does not exist in ${R_SHAREDLIBDIR}")
-ELSE(NOT LIBR_BLAS)
-	MESSAGE(STATUS "Yes, ${LIBR_BLAS} exists")
-	SET(R_USED_LIBS ${R_USED_LIBS} Rblas)
-ENDIF(NOT LIBR_BLAS)
+#MESSAGE(STATUS "Checking whether we should link against Rblas library")
+#FIND_LIBRARY(LIBR_BLAS
+#	blas
+#	PATHS ${R_SHAREDLIBDIR} "/usr/lib/x86_64-linux-gnu"
+#	NO_DEFAULT_PATH)
+#IF(NOT LIBR_BLAS)
+#	MESSAGE(STATUS "No, it does not exist in ${R_SHAREDLIBDIR}")
+#ELSE(NOT LIBR_BLAS)
+#	MESSAGE(STATUS "Yes, ${LIBR_BLAS} exists")
+#	SET(R_USED_LIBS ${R_USED_LIBS} Rblas)
+#ENDIF(NOT LIBR_BLAS)
 
 # find R package library location
 IF(WIN32)
