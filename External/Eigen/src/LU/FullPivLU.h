@@ -68,10 +68,10 @@ template<typename _MatrixType> class FullPivLU
     };
     typedef typename MatrixType::Scalar Scalar;
     typedef typename NumTraits<typename MatrixType::Scalar>::Real RealScalar;
-    typedef typename ei_traits<MatrixType>::StorageKind StorageKind;
+    typedef typename internal::traits<MatrixType>::StorageKind StorageKind;
     typedef typename MatrixType::Index Index;
-    typedef typename ei_plain_row_type<MatrixType, Index>::type IntRowVectorType;
-    typedef typename ei_plain_col_type<MatrixType, Index>::type IntColVectorType;
+    typedef typename internal::plain_row_type<MatrixType, Index>::type IntRowVectorType;
+    typedef typename internal::plain_col_type<MatrixType, Index>::type IntColVectorType;
     typedef PermutationMatrix<ColsAtCompileTime, MaxColsAtCompileTime> PermutationQType;
     typedef PermutationMatrix<RowsAtCompileTime, MaxRowsAtCompileTime> PermutationPType;
 
@@ -115,7 +115,7 @@ template<typename _MatrixType> class FullPivLU
       */
     inline const MatrixType& matrixLU() const
     {
-      ei_assert(m_isInitialized && "LU is not initialized.");
+      eigen_assert(m_isInitialized && "LU is not initialized.");
       return m_lu;
     }
 
@@ -128,7 +128,7 @@ template<typename _MatrixType> class FullPivLU
       */
     inline Index nonzeroPivots() const
     {
-      ei_assert(m_isInitialized && "LU is not initialized.");
+      eigen_assert(m_isInitialized && "LU is not initialized.");
       return m_nonzero_pivots;
     }
 
@@ -143,7 +143,7 @@ template<typename _MatrixType> class FullPivLU
       */
     inline const PermutationPType& permutationP() const
     {
-      ei_assert(m_isInitialized && "LU is not initialized.");
+      eigen_assert(m_isInitialized && "LU is not initialized.");
       return m_p;
     }
 
@@ -153,7 +153,7 @@ template<typename _MatrixType> class FullPivLU
       */
     inline const PermutationQType& permutationQ() const
     {
-      ei_assert(m_isInitialized && "LU is not initialized.");
+      eigen_assert(m_isInitialized && "LU is not initialized.");
       return m_q;
     }
 
@@ -171,10 +171,10 @@ template<typename _MatrixType> class FullPivLU
       *
       * \sa image()
       */
-    inline const ei_kernel_retval<FullPivLU> kernel() const
+    inline const internal::kernel_retval<FullPivLU> kernel() const
     {
-      ei_assert(m_isInitialized && "LU is not initialized.");
-      return ei_kernel_retval<FullPivLU>(*this);
+      eigen_assert(m_isInitialized && "LU is not initialized.");
+      return internal::kernel_retval<FullPivLU>(*this);
     }
 
     /** \returns the image of the matrix, also called its column-space. The columns of the returned matrix
@@ -196,11 +196,11 @@ template<typename _MatrixType> class FullPivLU
       *
       * \sa kernel()
       */
-    inline const ei_image_retval<FullPivLU>
+    inline const internal::image_retval<FullPivLU>
       image(const MatrixType& originalMatrix) const
     {
-      ei_assert(m_isInitialized && "LU is not initialized.");
-      return ei_image_retval<FullPivLU>(*this, originalMatrix);
+      eigen_assert(m_isInitialized && "LU is not initialized.");
+      return internal::image_retval<FullPivLU>(*this, originalMatrix);
     }
 
     /** \return a solution x to the equation Ax=b, where A is the matrix of which
@@ -223,11 +223,11 @@ template<typename _MatrixType> class FullPivLU
       * \sa TriangularView::solve(), kernel(), inverse()
       */
     template<typename Rhs>
-    inline const ei_solve_retval<FullPivLU, Rhs>
+    inline const internal::solve_retval<FullPivLU, Rhs>
     solve(const MatrixBase<Rhs>& b) const
     {
-      ei_assert(m_isInitialized && "LU is not initialized.");
-      return ei_solve_retval<FullPivLU, Rhs>(*this, b.derived());
+      eigen_assert(m_isInitialized && "LU is not initialized.");
+      return internal::solve_retval<FullPivLU, Rhs>(*this, b.derived());
     }
 
     /** \returns the determinant of the matrix of which
@@ -245,7 +245,7 @@ template<typename _MatrixType> class FullPivLU
       *
       * \sa MatrixBase::determinant()
       */
-    typename ei_traits<MatrixType>::Scalar determinant() const;
+    typename internal::traits<MatrixType>::Scalar determinant() const;
 
     /** Allows to prescribe a threshold to be used by certain methods, such as rank(),
       * who need to determine when pivots are to be considered nonzero. This is not used for the
@@ -282,6 +282,7 @@ template<typename _MatrixType> class FullPivLU
     FullPivLU& setThreshold(Default_t)
     {
       m_usePrescribedThreshold = false;
+      return *this;
     }
 
     /** Returns the threshold that will be used by certain methods such as rank().
@@ -290,7 +291,7 @@ template<typename _MatrixType> class FullPivLU
       */
     RealScalar threshold() const
     {
-      ei_assert(m_isInitialized || m_usePrescribedThreshold);
+      eigen_assert(m_isInitialized || m_usePrescribedThreshold);
       return m_usePrescribedThreshold ? m_prescribedThreshold
       // this formula comes from experimenting (see "LU precision tuning" thread on the list)
       // and turns out to be identical to Higham's formula used already in LDLt.
@@ -305,11 +306,11 @@ template<typename _MatrixType> class FullPivLU
       */
     inline Index rank() const
     {
-      ei_assert(m_isInitialized && "LU is not initialized.");
-      RealScalar premultiplied_threshold = ei_abs(m_maxpivot) * threshold();
+      eigen_assert(m_isInitialized && "LU is not initialized.");
+      RealScalar premultiplied_threshold = internal::abs(m_maxpivot) * threshold();
       Index result = 0;
       for(Index i = 0; i < m_nonzero_pivots; ++i)
-        result += (ei_abs(m_lu.coeff(i,i)) > premultiplied_threshold);
+        result += (internal::abs(m_lu.coeff(i,i)) > premultiplied_threshold);
       return result;
     }
 
@@ -321,7 +322,7 @@ template<typename _MatrixType> class FullPivLU
       */
     inline Index dimensionOfKernel() const
     {
-      ei_assert(m_isInitialized && "LU is not initialized.");
+      eigen_assert(m_isInitialized && "LU is not initialized.");
       return cols() - rank();
     }
 
@@ -334,7 +335,7 @@ template<typename _MatrixType> class FullPivLU
       */
     inline bool isInjective() const
     {
-      ei_assert(m_isInitialized && "LU is not initialized.");
+      eigen_assert(m_isInitialized && "LU is not initialized.");
       return rank() == cols();
     }
 
@@ -347,7 +348,7 @@ template<typename _MatrixType> class FullPivLU
       */
     inline bool isSurjective() const
     {
-      ei_assert(m_isInitialized && "LU is not initialized.");
+      eigen_assert(m_isInitialized && "LU is not initialized.");
       return rank() == rows();
     }
 
@@ -359,7 +360,7 @@ template<typename _MatrixType> class FullPivLU
       */
     inline bool isInvertible() const
     {
-      ei_assert(m_isInitialized && "LU is not initialized.");
+      eigen_assert(m_isInitialized && "LU is not initialized.");
       return isInjective() && (m_lu.rows() == m_lu.cols());
     }
 
@@ -370,11 +371,11 @@ template<typename _MatrixType> class FullPivLU
       *
       * \sa MatrixBase::inverse()
       */
-    inline const ei_solve_retval<FullPivLU,typename MatrixType::IdentityReturnType> inverse() const
+    inline const internal::solve_retval<FullPivLU,typename MatrixType::IdentityReturnType> inverse() const
     {
-      ei_assert(m_isInitialized && "LU is not initialized.");
-      ei_assert(m_lu.rows() == m_lu.cols() && "You can't take the inverse of a non-square matrix!");
-      return ei_solve_retval<FullPivLU,typename MatrixType::IdentityReturnType>
+      eigen_assert(m_isInitialized && "LU is not initialized.");
+      eigen_assert(m_lu.rows() == m_lu.cols() && "You can't take the inverse of a non-square matrix!");
+      return internal::solve_retval<FullPivLU,typename MatrixType::IdentityReturnType>
                (*this, MatrixType::Identity(m_lu.rows(), m_lu.cols()));
     }
 
@@ -443,7 +444,6 @@ FullPivLU<MatrixType>& FullPivLU<MatrixType>::compute(const MatrixType& matrix)
 
   m_nonzero_pivots = size; // the generic case is that in which all pivots are nonzero (invertible case)
   m_maxpivot = RealScalar(0);
-  RealScalar cutoff(0);
 
   for(Index k = 0; k < size; ++k)
   {
@@ -458,14 +458,7 @@ FullPivLU<MatrixType>& FullPivLU<MatrixType>::compute(const MatrixType& matrix)
     row_of_biggest_in_corner += k; // correct the values! since they were computed in the corner,
     col_of_biggest_in_corner += k; // need to add k to them.
 
-    // when k==0, biggest_in_corner is the biggest coeff absolute value in the original matrix
-    if(k == 0) cutoff = biggest_in_corner * NumTraits<Scalar>::epsilon();
-
-    // if the pivot (hence the corner) is "zero", terminate to avoid generating nan/inf values.
-    // Notice that using an exact comparison (biggest_in_corner==0) here, as Golub-van Loan do in
-    // their pseudo-code, results in numerical instability! The cutoff here has been validated
-    // by running the unit test 'lu' with many repetitions.
-    if(biggest_in_corner < cutoff)
+    if(biggest_in_corner==RealScalar(0))
     {
       // before exiting, make sure to initialize the still uninitialized transpositions
       // in a sane state without destroying what we already have.
@@ -519,10 +512,10 @@ FullPivLU<MatrixType>& FullPivLU<MatrixType>::compute(const MatrixType& matrix)
 }
 
 template<typename MatrixType>
-typename ei_traits<MatrixType>::Scalar FullPivLU<MatrixType>::determinant() const
+typename internal::traits<MatrixType>::Scalar FullPivLU<MatrixType>::determinant() const
 {
-  ei_assert(m_isInitialized && "LU is not initialized.");
-  ei_assert(m_lu.rows() == m_lu.cols() && "You can't take the determinant of a non-square matrix!");
+  eigen_assert(m_isInitialized && "LU is not initialized.");
+  eigen_assert(m_lu.rows() == m_lu.cols() && "You can't take the determinant of a non-square matrix!");
   return Scalar(m_det_pq) * Scalar(m_lu.diagonal().prod());
 }
 
@@ -532,8 +525,8 @@ typename ei_traits<MatrixType>::Scalar FullPivLU<MatrixType>::determinant() cons
 template<typename MatrixType>
 MatrixType FullPivLU<MatrixType>::reconstructedMatrix() const
 {
-  ei_assert(m_isInitialized && "LU is not initialized.");
-  const Index smalldim = std::min(m_lu.rows(), m_lu.cols());
+  eigen_assert(m_isInitialized && "LU is not initialized.");
+  const Index smalldim = (std::min)(m_lu.rows(), m_lu.cols());
   // LU
   MatrixType res(m_lu.rows(),m_lu.cols());
   // FIXME the .toDenseMatrix() should not be needed...
@@ -553,9 +546,10 @@ MatrixType FullPivLU<MatrixType>::reconstructedMatrix() const
 
 /********* Implementation of kernel() **************************************************/
 
+namespace internal {
 template<typename _MatrixType>
-struct ei_kernel_retval<FullPivLU<_MatrixType> >
-  : ei_kernel_retval_base<FullPivLU<_MatrixType> >
+struct kernel_retval<FullPivLU<_MatrixType> >
+  : kernel_retval_base<FullPivLU<_MatrixType> >
 {
   EIGEN_MAKE_KERNEL_HELPERS(FullPivLU<_MatrixType>)
 
@@ -596,9 +590,9 @@ struct ei_kernel_retval<FullPivLU<_MatrixType> >
     RealScalar premultiplied_threshold = dec().maxPivot() * dec().threshold();
     Index p = 0;
     for(Index i = 0; i < dec().nonzeroPivots(); ++i)
-      if(ei_abs(dec().matrixLU().coeff(i,i)) > premultiplied_threshold)
+      if(abs(dec().matrixLU().coeff(i,i)) > premultiplied_threshold)
         pivots.coeffRef(p++) = i;
-    ei_internal_assert(p == rank());
+    eigen_internal_assert(p == rank());
 
     // we construct a temporaty trapezoid matrix m, by taking the U matrix and
     // permuting the rows and cols to bring the nonnegligible pivots to the top of
@@ -639,8 +633,8 @@ struct ei_kernel_retval<FullPivLU<_MatrixType> >
 /***** Implementation of image() *****************************************************/
 
 template<typename _MatrixType>
-struct ei_image_retval<FullPivLU<_MatrixType> >
-  : ei_image_retval_base<FullPivLU<_MatrixType> >
+struct image_retval<FullPivLU<_MatrixType> >
+  : image_retval_base<FullPivLU<_MatrixType> >
 {
   EIGEN_MAKE_IMAGE_HELPERS(FullPivLU<_MatrixType>)
 
@@ -664,9 +658,9 @@ struct ei_image_retval<FullPivLU<_MatrixType> >
     RealScalar premultiplied_threshold = dec().maxPivot() * dec().threshold();
     Index p = 0;
     for(Index i = 0; i < dec().nonzeroPivots(); ++i)
-      if(ei_abs(dec().matrixLU().coeff(i,i)) > premultiplied_threshold)
+      if(abs(dec().matrixLU().coeff(i,i)) > premultiplied_threshold)
         pivots.coeffRef(p++) = i;
-    ei_internal_assert(p == rank());
+    eigen_internal_assert(p == rank());
 
     for(Index i = 0; i < rank(); ++i)
       dst.col(i) = originalMatrix().col(dec().permutationQ().indices().coeff(pivots.coeff(i)));
@@ -676,8 +670,8 @@ struct ei_image_retval<FullPivLU<_MatrixType> >
 /***** Implementation of solve() *****************************************************/
 
 template<typename _MatrixType, typename Rhs>
-struct ei_solve_retval<FullPivLU<_MatrixType>, Rhs>
-  : ei_solve_retval_base<FullPivLU<_MatrixType>, Rhs>
+struct solve_retval<FullPivLU<_MatrixType>, Rhs>
+  : solve_retval_base<FullPivLU<_MatrixType>, Rhs>
 {
   EIGEN_MAKE_SOLVE_HELPERS(FullPivLU<_MatrixType>,Rhs)
 
@@ -693,8 +687,8 @@ struct ei_solve_retval<FullPivLU<_MatrixType>, Rhs>
 
     const Index rows = dec().rows(), cols = dec().cols(),
               nonzero_pivots = dec().nonzeroPivots();
-    ei_assert(rhs().rows() == rows);
-    const Index smalldim = std::min(rows, cols);
+    eigen_assert(rhs().rows() == rows);
+    const Index smalldim = (std::min)(rows, cols);
 
     if(nonzero_pivots == 0)
     {
@@ -732,6 +726,8 @@ struct ei_solve_retval<FullPivLU<_MatrixType>, Rhs>
       dst.row(dec().permutationQ().indices().coeff(i)).setZero();
   }
 };
+
+} // end namespace internal
 
 /******* MatrixBase methods *****************************************************************/
 

@@ -137,8 +137,8 @@ template<typename _MatrixType> class RealSchur
       */
     const MatrixType& matrixU() const
     {
-      ei_assert(m_isInitialized && "RealSchur is not initialized.");
-      ei_assert(m_matUisUptodate && "The matrix U has not been computed during the RealSchur decomposition.");
+      eigen_assert(m_isInitialized && "RealSchur is not initialized.");
+      eigen_assert(m_matUisUptodate && "The matrix U has not been computed during the RealSchur decomposition.");
       return m_matU;
     }
 
@@ -154,7 +154,7 @@ template<typename _MatrixType> class RealSchur
       */
     const MatrixType& matrixT() const
     {
-      ei_assert(m_isInitialized && "RealSchur is not initialized.");
+      eigen_assert(m_isInitialized && "RealSchur is not initialized.");
       return m_matT;
     }
   
@@ -183,7 +183,7 @@ template<typename _MatrixType> class RealSchur
       */
     ComputationInfo info() const
     {
-      ei_assert(m_isInitialized && "RealSchur is not initialized.");
+      eigen_assert(m_isInitialized && "RealSchur is not initialized.");
       return m_info;
     }
 
@@ -235,7 +235,7 @@ RealSchur<MatrixType>& RealSchur<MatrixType>::compute(const MatrixType& matrix, 
   // Rows iu+1,...,end are already brought in triangular form.
   Index iu = m_matT.cols() - 1;
   Index iter = 0; // iteration count
-  Scalar exshift = 0.0; // sum of exceptional shifts
+  Scalar exshift(0); // sum of exceptional shifts
   Scalar norm = computeNormOfT();
 
   while (iu >= 0)
@@ -247,7 +247,7 @@ RealSchur<MatrixType>& RealSchur<MatrixType>::compute(const MatrixType& matrix, 
     {
       m_matT.coeffRef(iu,iu) = m_matT.coeff(iu,iu) + exshift;
       if (iu > 0) 
-	m_matT.coeffRef(iu, iu-1) = Scalar(0);
+        m_matT.coeffRef(iu, iu-1) = Scalar(0);
       iu--;
       iter = 0;
     }
@@ -259,7 +259,8 @@ RealSchur<MatrixType>& RealSchur<MatrixType>::compute(const MatrixType& matrix, 
     }
     else // No convergence yet
     {
-      Vector3s firstHouseholderVector, shiftInfo;
+      // The firstHouseholderVector vector has to be initialized to something to get rid of a silly GCC warning (-O1 -Wall -DNDEBUG )
+      Vector3s firstHouseholderVector(0,0,0), shiftInfo;
       computeShift(iu, iter, exshift, shiftInfo);
       iter = iter + 1; 
       if (iter > m_maxIterations) break;
@@ -287,9 +288,9 @@ inline typename MatrixType::Scalar RealSchur<MatrixType>::computeNormOfT()
   // FIXME to be efficient the following would requires a triangular reduxion code
   // Scalar norm = m_matT.upper().cwiseAbs().sum() 
   //               + m_matT.bottomLeftCorner(size-1,size-1).diagonal().cwiseAbs().sum();
-  Scalar norm = 0.0;
+  Scalar norm(0);
   for (Index j = 0; j < size; ++j)
-    norm += m_matT.row(j).segment(std::max(j-1,Index(0)), size-std::max(j-1,Index(0))).cwiseAbs().sum();
+    norm += m_matT.row(j).segment((std::max)(j-1,Index(0)), size-(std::max)(j-1,Index(0))).cwiseAbs().sum();
   return norm;
 }
 
@@ -300,10 +301,10 @@ inline typename MatrixType::Index RealSchur<MatrixType>::findSmallSubdiagEntry(I
   Index res = iu;
   while (res > 0)
   {
-    Scalar s = ei_abs(m_matT.coeff(res-1,res-1)) + ei_abs(m_matT.coeff(res,res));
+    Scalar s = internal::abs(m_matT.coeff(res-1,res-1)) + internal::abs(m_matT.coeff(res,res));
     if (s == 0.0)
       s = norm;
-    if (ei_abs(m_matT.coeff(res,res-1)) < NumTraits<Scalar>::epsilon() * s)
+    if (internal::abs(m_matT.coeff(res,res-1)) < NumTraits<Scalar>::epsilon() * s)
       break;
     res--;
   }
@@ -323,11 +324,11 @@ inline void RealSchur<MatrixType>::splitOffTwoRows(Index iu, bool computeU, Scal
   m_matT.coeffRef(iu,iu) += exshift;
   m_matT.coeffRef(iu-1,iu-1) += exshift;
 
-  if (q >= 0) // Two real eigenvalues
+  if (q >= Scalar(0)) // Two real eigenvalues
   {
-    Scalar z = ei_sqrt(ei_abs(q));
-    PlanarRotation<Scalar> rot;
-    if (p >= 0)
+    Scalar z = internal::sqrt(internal::abs(q));
+    JacobiRotation<Scalar> rot;
+    if (p >= Scalar(0))
       rot.makeGivens(p + z, m_matT.coeff(iu, iu-1));
     else
       rot.makeGivens(p - z, m_matT.coeff(iu, iu-1));
@@ -357,7 +358,7 @@ inline void RealSchur<MatrixType>::computeShift(Index iu, Index iter, Scalar& ex
     exshift += shiftInfo.coeff(0);
     for (Index i = 0; i <= iu; ++i)
       m_matT.coeffRef(i,i) -= shiftInfo.coeff(0);
-    Scalar s = ei_abs(m_matT.coeff(iu,iu-1)) + ei_abs(m_matT.coeff(iu-1,iu-2));
+    Scalar s = internal::abs(m_matT.coeff(iu,iu-1)) + internal::abs(m_matT.coeff(iu-1,iu-2));
     shiftInfo.coeffRef(0) = Scalar(0.75) * s;
     shiftInfo.coeffRef(1) = Scalar(0.75) * s;
     shiftInfo.coeffRef(2) = Scalar(-0.4375) * s * s;
@@ -368,9 +369,9 @@ inline void RealSchur<MatrixType>::computeShift(Index iu, Index iter, Scalar& ex
   {
     Scalar s = (shiftInfo.coeff(1) - shiftInfo.coeff(0)) / Scalar(2.0);
     s = s * s + shiftInfo.coeff(2);
-    if (s > 0)
+    if (s > Scalar(0))
     {
-      s = ei_sqrt(s);
+      s = internal::sqrt(s);
       if (shiftInfo.coeff(1) < shiftInfo.coeff(0))
         s = -s;
       s = s + (shiftInfo.coeff(1) - shiftInfo.coeff(0)) / Scalar(2.0);
@@ -400,9 +401,9 @@ inline void RealSchur<MatrixType>::initFrancisQRStep(Index il, Index iu, const V
     if (im == il) {
       break;
     }
-    const Scalar lhs = m_matT.coeff(im,im-1) * (ei_abs(v.coeff(1)) + ei_abs(v.coeff(2)));
-    const Scalar rhs = v.coeff(0) * (ei_abs(m_matT.coeff(im-1,im-1)) + ei_abs(Tmm) + ei_abs(m_matT.coeff(im+1,im+1)));
-    if (ei_abs(lhs) < NumTraits<Scalar>::epsilon() * rhs)
+    const Scalar lhs = m_matT.coeff(im,im-1) * (internal::abs(v.coeff(1)) + internal::abs(v.coeff(2)));
+    const Scalar rhs = v.coeff(0) * (internal::abs(m_matT.coeff(im-1,im-1)) + internal::abs(Tmm) + internal::abs(m_matT.coeff(im+1,im+1)));
+    if (internal::abs(lhs) < NumTraits<Scalar>::epsilon() * rhs)
     {
       break;
     }
@@ -441,9 +442,9 @@ inline void RealSchur<MatrixType>::performFrancisQRStep(Index il, Index im, Inde
 
       // These Householder transformations form the O(n^3) part of the algorithm
       m_matT.block(k, k, 3, size-k).applyHouseholderOnTheLeft(ess, tau, workspace);
-      m_matT.block(0, k, std::min(iu,k+3) + 1, 3).applyHouseholderOnTheRight(ess, tau, workspace);
+      m_matT.block(0, k, (std::min)(iu,k+3) + 1, 3).applyHouseholderOnTheRight(ess, tau, workspace);
       if (computeU)
-	m_matU.block(0, k, size, 3).applyHouseholderOnTheRight(ess, tau, workspace);
+        m_matU.block(0, k, size, 3).applyHouseholderOnTheRight(ess, tau, workspace);
     }
   }
 

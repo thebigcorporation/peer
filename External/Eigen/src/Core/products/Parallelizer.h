@@ -25,19 +25,21 @@
 #ifndef EIGEN_PARALLELIZER_H
 #define EIGEN_PARALLELIZER_H
 
+namespace internal {
+
 /** \internal */
-inline void ei_manage_multi_threading(Action action, int* v)
+inline void manage_multi_threading(Action action, int* v)
 {
-  static int m_maxThreads = -1;
+  static EIGEN_UNUSED int m_maxThreads = -1;
 
   if(action==SetAction)
   {
-    ei_internal_assert(v!=0);
+    eigen_internal_assert(v!=0);
     m_maxThreads = *v;
   }
   else if(action==GetAction)
   {
-    ei_internal_assert(v!=0);
+    eigen_internal_assert(v!=0);
     #ifdef EIGEN_HAS_OPENMP
     if(m_maxThreads>0)
       *v = m_maxThreads;
@@ -49,7 +51,7 @@ inline void ei_manage_multi_threading(Action action, int* v)
   }
   else
   {
-    ei_internal_assert(false);
+    eigen_internal_assert(false);
   }
 }
 
@@ -58,7 +60,7 @@ inline void ei_manage_multi_threading(Action action, int* v)
 inline int nbThreads()
 {
   int ret;
-  ei_manage_multi_threading(GetAction, &ret);
+  manage_multi_threading(GetAction, &ret);
   return ret;
 }
 
@@ -66,7 +68,7 @@ inline int nbThreads()
   * \sa nbThreads */
 inline void setNbThreads(int v)
 {
-  ei_manage_multi_threading(SetAction, &v);
+  manage_multi_threading(SetAction, &v);
 }
 
 template<typename Index> struct GemmParallelInfo
@@ -81,9 +83,11 @@ template<typename Index> struct GemmParallelInfo
 };
 
 template<bool Condition, typename Functor, typename Index>
-void ei_parallelize_gemm(const Functor& func, Index rows, Index cols, bool transpose)
+void parallelize_gemm(const Functor& func, Index rows, Index cols, bool transpose)
 {
-#ifndef EIGEN_HAS_OPENMP
+  // TODO when EIGEN_USE_BLAS is defined,
+  // we should still enable OMP for other scalar types
+#if !(defined (EIGEN_HAS_OPENMP)) || defined (EIGEN_USE_BLAS)
   // FIXME the transpose variable is only needed to properly split
   // the matrix product when multithreading is enabled. This is a temporary
   // fix to support row-major destination matrices. This whole
@@ -122,7 +126,7 @@ void ei_parallelize_gemm(const Functor& func, Index rows, Index cols, bool trans
 
   Index blockCols = (cols / threads) & ~Index(0x3);
   Index blockRows = (rows / threads) & ~Index(0x7);
-
+  
   GemmParallelInfo<Index>* info = new GemmParallelInfo<Index>[threads];
 
   #pragma omp parallel for schedule(static,1) num_threads(threads)
@@ -146,5 +150,7 @@ void ei_parallelize_gemm(const Functor& func, Index rows, Index cols, bool trans
   delete[] info;
 #endif
 }
+
+} // end namespace internal
 
 #endif // EIGEN_PARALLELIZER_H

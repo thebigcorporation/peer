@@ -42,8 +42,10 @@
 #ifndef EIGEN_INVERSE_SSE_H
 #define EIGEN_INVERSE_SSE_H
 
+namespace internal {
+
 template<typename MatrixType, typename ResultType>
-struct ei_compute_inverse_size4<Architecture::SSE, float, MatrixType, ResultType>
+struct compute_inverse_size4<Architecture::SSE, float, MatrixType, ResultType>
 {
   enum {
     MatrixAlignment     = bool(MatrixType::Flags&AlignedBit),
@@ -53,7 +55,7 @@ struct ei_compute_inverse_size4<Architecture::SSE, float, MatrixType, ResultType
   
   static void run(const MatrixType& matrix, ResultType& result)
   {
-    EIGEN_ALIGN16 const  int _Sign_PNNP[4] = { 0x00000000, 0x80000000, 0x80000000, 0x00000000 };
+    EIGEN_ALIGN16 const unsigned int _Sign_PNNP[4] = { 0x00000000, 0x80000000, 0x80000000, 0x00000000 };
 
     // Load the full matrix into registers
     __m128 _L1 = matrix.template packet<MatrixAlignment>( 0);
@@ -171,7 +173,7 @@ struct ei_compute_inverse_size4<Architecture::SSE, float, MatrixType, ResultType
 };
 
 template<typename MatrixType, typename ResultType>
-struct ei_compute_inverse_size4<Architecture::SSE, double, MatrixType, ResultType>
+struct compute_inverse_size4<Architecture::SSE, double, MatrixType, ResultType>
 {
   enum {
     MatrixAlignment = bool(MatrixType::Flags&AlignedBit),
@@ -180,8 +182,8 @@ struct ei_compute_inverse_size4<Architecture::SSE, double, MatrixType, ResultTyp
   };
   static void run(const MatrixType& matrix, ResultType& result)
   {
-    const EIGEN_ALIGN16 long long int _Sign_NP[2] = { 0x8000000000000000ll, 0x0000000000000000ll };
-    const EIGEN_ALIGN16 long long int _Sign_PN[2] = { 0x0000000000000000ll, 0x8000000000000000ll };
+    const __m128d _Sign_NP = _mm_castsi128_pd(_mm_set_epi32(0x0,0x0,0x80000000,0x0));
+    const __m128d _Sign_PN = _mm_castsi128_pd(_mm_set_epi32(0x80000000,0x0,0x0,0x0));
 
     // The inverse is calculated using "Divide and Conquer" technique. The
     // original matrix is divide into four 2x2 sub-matrices. Since each
@@ -314,8 +316,8 @@ struct ei_compute_inverse_size4<Architecture::SSE, double, MatrixType, ResultTyp
     iB1 = _mm_sub_pd(_mm_mul_pd(C1, dB), iB1);
     iB2 = _mm_sub_pd(_mm_mul_pd(C2, dB), iB2);
 
-    d1 = _mm_xor_pd(rd, _mm_load_pd((double*)_Sign_PN));
-    d2 = _mm_xor_pd(rd, _mm_load_pd((double*)_Sign_NP));
+    d1 = _mm_xor_pd(rd, _Sign_PN);
+    d2 = _mm_xor_pd(rd, _Sign_NP);
 
     //  iC = B*|C| - A*C#*D;
     dC = _mm_shuffle_pd(dC,dC,0);
@@ -332,5 +334,7 @@ struct ei_compute_inverse_size4<Architecture::SSE, double, MatrixType, ResultTyp
     result.template writePacket<ResultAlignment>(14, _mm_mul_pd(_mm_shuffle_pd(iD2, iD1, 0), d2));
   }
 };
+
+}
 
 #endif // EIGEN_INVERSE_SSE_H

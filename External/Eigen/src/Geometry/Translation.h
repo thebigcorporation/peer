@@ -54,6 +54,8 @@ public:
   typedef Matrix<Scalar,Dim,Dim> LinearMatrixType;
   /** corresponding affine transformation type */
   typedef Transform<Scalar,Dim,Affine> AffineTransformType;
+  /** corresponding isometric transformation type */
+  typedef Transform<Scalar,Dim,Isometry> IsometryTransformType;
 
 protected:
 
@@ -66,14 +68,14 @@ public:
   /**  */
   inline Translation(const Scalar& sx, const Scalar& sy)
   {
-    ei_assert(Dim==2);
+    eigen_assert(Dim==2);
     m_coeffs.x() = sx;
     m_coeffs.y() = sy;
   }
   /**  */
   inline Translation(const Scalar& sx, const Scalar& sy, const Scalar& sz)
   {
-    ei_assert(Dim==3);
+    eigen_assert(Dim==3);
     m_coeffs.x() = sx;
     m_coeffs.y() = sy;
     m_coeffs.z() = sz;
@@ -114,8 +116,8 @@ public:
 
   /** Concatenates a translation and a rotation */
   template<typename Derived>
-  inline AffineTransformType operator*(const RotationBase<Derived,Dim>& r) const
-  { return *this * r.toRotationMatrix(); }
+  inline IsometryTransformType operator*(const RotationBase<Derived,Dim>& r) const
+  { return *this * IsometryTransformType(r); }
 
   /** \returns the concatenation of a linear transformation \a l with the translation \a t */
   // its a nightmare to define a templated friend function outside its declaration
@@ -132,8 +134,8 @@ public:
   }
 
   /** Concatenates a translation and a transformation */
-  template<int Mode>
-  inline Transform<Scalar,Dim,Mode> operator* (const Transform<Scalar,Dim,Mode>& t) const
+  template<int Mode, int Options>
+  inline Transform<Scalar,Dim,Mode> operator* (const Transform<Scalar,Dim,Mode,Options>& t) const
   {
     Transform<Scalar,Dim,Mode> res = t;
     res.pretranslate(m_coeffs);
@@ -161,8 +163,8 @@ public:
     * then this function smartly returns a const reference to \c *this.
     */
   template<typename NewScalarType>
-  inline typename ei_cast_return_type<Translation,Translation<NewScalarType,Dim> >::type cast() const
-  { return typename ei_cast_return_type<Translation,Translation<NewScalarType,Dim> >::type(*this); }
+  inline typename internal::cast_return_type<Translation,Translation<NewScalarType,Dim> >::type cast() const
+  { return typename internal::cast_return_type<Translation,Translation<NewScalarType,Dim> >::type(*this); }
 
   /** Copy constructor with scalar type conversion */
   template<typename OtherScalarType>

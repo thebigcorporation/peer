@@ -211,8 +211,8 @@ template<typename _MatrixType> class EigenSolver
       */
     const MatrixType& pseudoEigenvectors() const
     {
-      ei_assert(m_isInitialized && "EigenSolver is not initialized.");
-      ei_assert(m_eigenvectorsOk && "The eigenvectors have not been computed together with the eigenvalues.");
+      eigen_assert(m_isInitialized && "EigenSolver is not initialized.");
+      eigen_assert(m_eigenvectorsOk && "The eigenvectors have not been computed together with the eigenvalues.");
       return m_eivec;
     }
 
@@ -228,6 +228,7 @@ template<typename _MatrixType> class EigenSolver
       * block-diagonal. The blocks on the diagonal are either 1-by-1 or 2-by-2
       * blocks of the form
       * \f$ \begin{bmatrix} u & v \\ -v & u \end{bmatrix} \f$.
+      * These blocks are not sorted in any particular order.
       * The matrix \f$ D \f$ and the matrix \f$ V \f$ returned by
       * pseudoEigenvectors() satisfy \f$ AV = VD \f$.
       *
@@ -244,7 +245,8 @@ template<typename _MatrixType> class EigenSolver
       * compute(const MatrixType&, bool) has been called before.
       *
       * The eigenvalues are repeated according to their algebraic multiplicity,
-      * so there are as many eigenvalues as rows in the matrix.
+      * so there are as many eigenvalues as rows in the matrix. The eigenvalues 
+      * are not sorted in any particular order.
       *
       * Example: \include EigenSolver_eigenvalues.cpp
       * Output: \verbinclude EigenSolver_eigenvalues.out
@@ -254,7 +256,7 @@ template<typename _MatrixType> class EigenSolver
       */
     const EigenvalueType& eigenvalues() const
     {
-      ei_assert(m_isInitialized && "EigenSolver is not initialized.");
+      eigen_assert(m_isInitialized && "EigenSolver is not initialized.");
       return m_eivalues;
     }
 
@@ -289,7 +291,7 @@ template<typename _MatrixType> class EigenSolver
 
     ComputationInfo info() const
     {
-      ei_assert(m_isInitialized && "ComplexEigenSolver is not initialized.");
+      eigen_assert(m_isInitialized && "EigenSolver is not initialized.");
       return m_realSchur.info();
     }
 
@@ -311,17 +313,17 @@ template<typename _MatrixType> class EigenSolver
 template<typename MatrixType>
 MatrixType EigenSolver<MatrixType>::pseudoEigenvalueMatrix() const
 {
-  ei_assert(m_isInitialized && "EigenSolver is not initialized.");
+  eigen_assert(m_isInitialized && "EigenSolver is not initialized.");
   Index n = m_eivalues.rows();
   MatrixType matD = MatrixType::Zero(n,n);
   for (Index i=0; i<n; ++i)
   {
-    if (ei_isMuchSmallerThan(ei_imag(m_eivalues.coeff(i)), ei_real(m_eivalues.coeff(i))))
-      matD.coeffRef(i,i) = ei_real(m_eivalues.coeff(i));
+    if (internal::isMuchSmallerThan(internal::imag(m_eivalues.coeff(i)), internal::real(m_eivalues.coeff(i))))
+      matD.coeffRef(i,i) = internal::real(m_eivalues.coeff(i));
     else
     {
-      matD.template block<2,2>(i,i) <<  ei_real(m_eivalues.coeff(i)), ei_imag(m_eivalues.coeff(i)),
-                                       -ei_imag(m_eivalues.coeff(i)), ei_real(m_eivalues.coeff(i));
+      matD.template block<2,2>(i,i) <<  internal::real(m_eivalues.coeff(i)), internal::imag(m_eivalues.coeff(i)),
+                                       -internal::imag(m_eivalues.coeff(i)), internal::real(m_eivalues.coeff(i));
       ++i;
     }
   }
@@ -331,16 +333,17 @@ MatrixType EigenSolver<MatrixType>::pseudoEigenvalueMatrix() const
 template<typename MatrixType>
 typename EigenSolver<MatrixType>::EigenvectorsType EigenSolver<MatrixType>::eigenvectors() const
 {
-  ei_assert(m_isInitialized && "EigenSolver is not initialized.");
-  ei_assert(m_eigenvectorsOk && "The eigenvectors have not been computed together with the eigenvalues.");
+  eigen_assert(m_isInitialized && "EigenSolver is not initialized.");
+  eigen_assert(m_eigenvectorsOk && "The eigenvectors have not been computed together with the eigenvalues.");
   Index n = m_eivec.cols();
   EigenvectorsType matV(n,n);
   for (Index j=0; j<n; ++j)
   {
-    if (ei_isMuchSmallerThan(ei_imag(m_eivalues.coeff(j)), ei_real(m_eivalues.coeff(j))))
+    if (internal::isMuchSmallerThan(internal::imag(m_eivalues.coeff(j)), internal::real(m_eivalues.coeff(j))) || j+1==n)
     {
       // we have a real eigen value
       matV.col(j) = m_eivec.col(j).template cast<ComplexScalar>();
+      matV.col(j).normalize();
     }
     else
     {
@@ -384,7 +387,7 @@ EigenSolver<MatrixType>& EigenSolver<MatrixType>::compute(const MatrixType& matr
       else
       {
         Scalar p = Scalar(0.5) * (m_matT.coeff(i, i) - m_matT.coeff(i+1, i+1));
-        Scalar z = ei_sqrt(ei_abs(p * p + m_matT.coeff(i+1, i) * m_matT.coeff(i, i+1)));
+        Scalar z = internal::sqrt(internal::abs(p * p + m_matT.coeff(i+1, i) * m_matT.coeff(i, i+1)));
         m_eivalues.coeffRef(i)   = ComplexScalar(m_matT.coeff(i+1, i+1) + p, z);
         m_eivalues.coeffRef(i+1) = ComplexScalar(m_matT.coeff(i+1, i+1) + p, -z);
         i += 2;
@@ -407,7 +410,7 @@ template<typename Scalar>
 std::complex<Scalar> cdiv(Scalar xr, Scalar xi, Scalar yr, Scalar yi)
 {
   Scalar r,d;
-  if (ei_abs(yr) > ei_abs(yi))
+  if (internal::abs(yr) > internal::abs(yi))
   {
       r = yi/yr;
       d = yr + r*yi;
@@ -429,10 +432,10 @@ void EigenSolver<MatrixType>::doComputeEigenvectors()
   const Scalar eps = NumTraits<Scalar>::epsilon();
 
   // inefficient! this is already computed in RealSchur
-  Scalar norm = 0.0;
+  Scalar norm(0);
   for (Index j = 0; j < size; ++j)
   {
-    norm += m_matT.row(j).segment(std::max(j-1,Index(0)), size-std::max(j-1,Index(0))).cwiseAbs().sum();
+    norm += m_matT.row(j).segment((std::max)(j-1,Index(0)), size-(std::max)(j-1,Index(0))).cwiseAbs().sum();
   }
   
   // Backsubstitute to find vectors of upper triangular form
@@ -447,9 +450,9 @@ void EigenSolver<MatrixType>::doComputeEigenvectors()
     Scalar q = m_eivalues.coeff(n).imag();
 
     // Scalar vector
-    if (q == 0)
+    if (q == Scalar(0))
     {
-      Scalar lastr=0, lastw=0;
+      Scalar lastr(0), lastw(0);
       Index l = n;
 
       m_matT.coeffRef(n,n) = 1.0;
@@ -480,35 +483,35 @@ void EigenSolver<MatrixType>::doComputeEigenvectors()
             Scalar denom = (m_eivalues.coeff(i).real() - p) * (m_eivalues.coeff(i).real() - p) + m_eivalues.coeff(i).imag() * m_eivalues.coeff(i).imag();
             Scalar t = (x * lastr - lastw * r) / denom;
             m_matT.coeffRef(i,n) = t;
-            if (ei_abs(x) > ei_abs(lastw))
+            if (internal::abs(x) > internal::abs(lastw))
               m_matT.coeffRef(i+1,n) = (-r - w * t) / x;
             else
               m_matT.coeffRef(i+1,n) = (-lastr - y * t) / lastw;
           }
 
           // Overflow control
-          Scalar t = ei_abs(m_matT.coeff(i,n));
-          if ((eps * t) * t > 1)
+          Scalar t = internal::abs(m_matT.coeff(i,n));
+          if ((eps * t) * t > Scalar(1))
             m_matT.col(n).tail(size-i) /= t;
         }
       }
     }
-    else if (q < 0) // Complex vector
+    else if (q < Scalar(0) && n > 0) // Complex vector
     {
-      Scalar lastra=0, lastsa=0, lastw=0;
+      Scalar lastra(0), lastsa(0), lastw(0);
       Index l = n-1;
 
       // Last vector component imaginary so matrix is triangular
-      if (ei_abs(m_matT.coeff(n,n-1)) > ei_abs(m_matT.coeff(n-1,n)))
+      if (internal::abs(m_matT.coeff(n,n-1)) > internal::abs(m_matT.coeff(n-1,n)))
       {
         m_matT.coeffRef(n-1,n-1) = q / m_matT.coeff(n,n-1);
         m_matT.coeffRef(n-1,n) = -(m_matT.coeff(n,n) - p) / m_matT.coeff(n,n-1);
       }
       else
       {
-	std::complex<Scalar> cc = cdiv<Scalar>(0.0,-m_matT.coeff(n-1,n),m_matT.coeff(n-1,n-1)-p,q);
-        m_matT.coeffRef(n-1,n-1) = ei_real(cc);
-        m_matT.coeffRef(n-1,n) = ei_imag(cc);
+        std::complex<Scalar> cc = cdiv<Scalar>(0.0,-m_matT.coeff(n-1,n),m_matT.coeff(n-1,n-1)-p,q);
+        m_matT.coeffRef(n-1,n-1) = internal::real(cc);
+        m_matT.coeffRef(n-1,n) = internal::imag(cc);
       }
       m_matT.coeffRef(n,n-1) = 0.0;
       m_matT.coeffRef(n,n) = 1.0;
@@ -527,11 +530,11 @@ void EigenSolver<MatrixType>::doComputeEigenvectors()
         else
         {
           l = i;
-          if (m_eivalues.coeff(i).imag() == 0)
+          if (m_eivalues.coeff(i).imag() == RealScalar(0))
           {
             std::complex<Scalar> cc = cdiv(-ra,-sa,w,q);
-            m_matT.coeffRef(i,n-1) = ei_real(cc);
-            m_matT.coeffRef(i,n) = ei_imag(cc);
+            m_matT.coeffRef(i,n-1) = internal::real(cc);
+            m_matT.coeffRef(i,n) = internal::imag(cc);
           }
           else
           {
@@ -541,12 +544,12 @@ void EigenSolver<MatrixType>::doComputeEigenvectors()
             Scalar vr = (m_eivalues.coeff(i).real() - p) * (m_eivalues.coeff(i).real() - p) + m_eivalues.coeff(i).imag() * m_eivalues.coeff(i).imag() - q * q;
             Scalar vi = (m_eivalues.coeff(i).real() - p) * Scalar(2) * q;
             if ((vr == 0.0) && (vi == 0.0))
-              vr = eps * norm * (ei_abs(w) + ei_abs(q) + ei_abs(x) + ei_abs(y) + ei_abs(lastw));
+              vr = eps * norm * (internal::abs(w) + internal::abs(q) + internal::abs(x) + internal::abs(y) + internal::abs(lastw));
 
 	    std::complex<Scalar> cc = cdiv(x*lastra-lastw*ra+q*sa,x*lastsa-lastw*sa-q*ra,vr,vi);
-            m_matT.coeffRef(i,n-1) = ei_real(cc);
-            m_matT.coeffRef(i,n) = ei_imag(cc);
-            if (ei_abs(x) > (ei_abs(lastw) + ei_abs(q)))
+            m_matT.coeffRef(i,n-1) = internal::real(cc);
+            m_matT.coeffRef(i,n) = internal::imag(cc);
+            if (internal::abs(x) > (internal::abs(lastw) + internal::abs(q)))
             {
               m_matT.coeffRef(i+1,n-1) = (-ra - w * m_matT.coeff(i,n-1) + q * m_matT.coeff(i,n)) / x;
               m_matT.coeffRef(i+1,n) = (-sa - w * m_matT.coeff(i,n) - q * m_matT.coeff(i,n-1)) / x;
@@ -554,18 +557,26 @@ void EigenSolver<MatrixType>::doComputeEigenvectors()
             else
             {
               cc = cdiv(-lastra-y*m_matT.coeff(i,n-1),-lastsa-y*m_matT.coeff(i,n),lastw,q);
-              m_matT.coeffRef(i+1,n-1) = ei_real(cc);
-              m_matT.coeffRef(i+1,n) = ei_imag(cc);
+              m_matT.coeffRef(i+1,n-1) = internal::real(cc);
+              m_matT.coeffRef(i+1,n) = internal::imag(cc);
             }
           }
 
           // Overflow control
-          Scalar t = std::max(ei_abs(m_matT.coeff(i,n-1)),ei_abs(m_matT.coeff(i,n)));
-          if ((eps * t) * t > 1)
+          using std::max;
+          Scalar t = (max)(internal::abs(m_matT.coeff(i,n-1)),internal::abs(m_matT.coeff(i,n)));
+          if ((eps * t) * t > Scalar(1))
             m_matT.block(i, n-1, size-i, 2) /= t;
 
         }
       }
+      
+      // We handled a pair of complex conjugate eigenvalues, so need to skip them both
+      n--;
+    }
+    else
+    {
+      eigen_assert(0 && "Internal bug in EigenSolver"); // this should not happen
     }
   }
 
