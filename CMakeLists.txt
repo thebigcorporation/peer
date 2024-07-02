@@ -29,7 +29,7 @@ endif (BUILD_UNIVERSAL)
 #Python include directory 
 #normally there is no need to specify them;instead these are
 #auto-determined from the location of the binary.
-#SET(PYTHON_INCLUDE_DIRS "")
+SET(PYTHON_INCLUDE_DIRS "/usr/lib/python3/dist-packages/")
 #Python install directory
 #If specified, the peer module will be installed here. Otherwise the
 #default site-packages location of the respective python installation
